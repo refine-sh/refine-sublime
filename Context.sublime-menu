@@ -1,0 +1,9 @@
+[
+  {"caption": "-", "id": "refine"},
+  {"caption": "Refine", "children": [
+    {"caption": "Check Writing", "command": "refine_check"},
+    {"caption": "Show Suggestion", "command": "refine_show"},
+    {"caption": "Apply Suggestion", "command": "refine_action", "args": {"kind": "apply"}},
+    {"caption": "Dismiss Suggestion", "command": "refine_action", "args": {"kind": "dismiss"}}
+  ]}
+]

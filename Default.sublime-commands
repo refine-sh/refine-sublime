@@ -1,0 +1,12 @@
+[
+  {"caption": "Refine: Check Writing", "command": "refine_check"},
+  {"caption": "Refine: Show Suggestion", "command": "refine_show"},
+  {"caption": "Refine: Next Suggestion", "command": "refine_next"},
+  {"caption": "Refine: Previous Suggestion", "command": "refine_next", "args": {"forward": false}},
+  {"caption": "Refine: Apply Suggestion", "command": "refine_action", "args": {"kind": "apply"}},
+  {"caption": "Refine: Dismiss Suggestion", "command": "refine_action", "args": {"kind": "dismiss"}},
+  {"caption": "Refine: Explain Suggestion", "command": "refine_action", "args": {"kind": "explain"}},
+  {"caption": "Refine: Report Suggestion", "command": "refine_action", "args": {"kind": "report"}},
+  {"caption": "Refine: Connection Status", "command": "refine_status"},
+  {"caption": "Refine: Reconnect", "command": "refine_reconnect"}
+]

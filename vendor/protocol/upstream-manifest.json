@@ -1,0 +1,534 @@
+{
+  "formatVersion": 1,
+  "releaseCandidate": "1.0.0-rc.5",
+  "protocol": {
+    "major": 1,
+    "minor": 0
+  },
+  "artifactDigest": "2d04d785f611f3afe3425bde4d505e2baa23f4500adc4cce9e46fb9b3a97a365",
+  "baseArtifactDigest": "c20ac8e2ec90abf6886ae27158bfe822b616cf236b90ca47a1797932cfc9497e",
+  "capabilityRegistryDigest": "272b913f65b18cd9558ecef91e28a73ebce88f5016a6df41d1b1cef6079bd192",
+  "jsonPositiveCaseIds": [
+    "command-open-document",
+    "command-replace-document-two-sources",
+    "command-update-attention",
+    "command-update-attention-with-no-visible-range",
+    "command-request-full-check",
+    "command-request-selection-check",
+    "command-request-source-check",
+    "command-perform-apply",
+    "command-perform-dismiss",
+    "command-perform-explain",
+    "command-perform-report",
+    "command-complete-applied",
+    "command-complete-rejected",
+    "command-complete-unsupported-without-snapshot",
+    "command-complete-unavailable",
+    "command-complete-indeterminate",
+    "command-close-document",
+    "command-open-document-hard-line-breaks",
+    "descriptor-exact-1.0",
+    "hello-empty-base-capabilities",
+    "hello-unknown-offer-is-well-formed",
+    "welcome-first-attach",
+    "welcome-retained-run",
+    "rejected-incompatible-protocol",
+    "rejected-invalid-client",
+    "rejected-run-needs-new-id",
+    "rejected-run-retry",
+    "rejected-server-busy",
+    "rejected-engine-unavailable",
+    "unknown-members-are-ignored",
+    "future-registry-can-exceed-negotiation-limit",
+    "safe-integer-minimum",
+    "safe-integer-maximum",
+    "uint16-minimum",
+    "uint16-maximum",
+    "sequence-minimum",
+    "sequence-maximum",
+    "identifier-one-byte",
+    "identifier-128-bytes",
+    "source-syntax-plain",
+    "source-syntax-markdown",
+    "source-syntax-markdown-hard-line-breaks",
+    "source-syntax-latex",
+    "suggestion-kind-grammar",
+    "suggestion-kind-fluency",
+    "suggestion-kind-mixed",
+    "diff-kind-unchanged",
+    "diff-kind-delete",
+    "diff-kind-insert",
+    "text-direction-ltr",
+    "text-direction-rtl",
+    "highlight-underline",
+    "highlight-dashed",
+    "highlight-solid",
+    "activation-highlight",
+    "activation-tip",
+    "presentation-pending",
+    "presentation-checking",
+    "presentation-complete",
+    "presentation-unavailable",
+    "presentation-closed",
+    "coverage-full",
+    "coverage-partial",
+    "resync-document-not-open",
+    "resync-conflicting-revision",
+    "resync-reused-revision",
+    "resync-invalid-document",
+    "apply-rejection-stale",
+    "apply-rejection-text",
+    "apply-unsupported-read-only",
+    "apply-unsupported-non-atomic",
+    "exact-source-byte-limit",
+    "exact-capability-count-limit",
+    "event-document-accepted",
+    "event-resync-required",
+    "event-presentation-content-replaced",
+    "event-presentation-checking-progress",
+    "event-apply-requested",
+    "event-explanation-started",
+    "event-explanation-streaming",
+    "event-explanation-completed",
+    "event-explanation-stale",
+    "event-explanation-unavailable",
+    "event-action-completed",
+    "event-action-rejected",
+    "event-fault-invalid-sequence-fatal",
+    "event-fault-malformed-nonfatal",
+    "event-fault-resource-limit-fatal",
+    "event-fault-invalid-document-nonfatal",
+    "fault-invalid-sequence-fatal",
+    "fault-malformed-nonfatal",
+    "fault-malformed-fatal",
+    "fault-resource-nonfatal",
+    "fault-resource-fatal",
+    "fault-internal-nonfatal",
+    "fault-internal-fatal",
+    "fault-document-nonfatal",
+    "fault-source-nonfatal",
+    "fault-engine-nonfatal",
+    "action-key-tab",
+    "action-key-escape",
+    "action-key-return",
+    "action-key-space",
+    "action-key-delete",
+    "action-key-left-arrow",
+    "action-key-right-arrow",
+    "action-key-up-arrow",
+    "action-key-down-arrow",
+    "action-key-left-shift",
+    "action-key-right-shift",
+    "action-key-left-option",
+    "action-key-right-option",
+    "action-key-left-control",
+    "action-key-right-control",
+    "presentation-unavailable-disconnected",
+    "presentation-unavailable-check-failed",
+    "presentation-unavailable-engine",
+    "presentation-unavailable-document",
+    "presentation-unavailable-source",
+    "presentation-unavailable-resource",
+    "presentation-unavailable-entitlement",
+    "explanation-unavailable-disconnected",
+    "explanation-unavailable-engine",
+    "explanation-unavailable-validation",
+    "explanation-unavailable-read-only",
+    "explanation-unavailable-non-atomic",
+    "explanation-unavailable-mutation",
+    "explanation-unavailable-indeterminate",
+    "explanation-unavailable-apply-proof",
+    "explanation-unavailable-reporting",
+    "action-rejected-stale",
+    "action-rejected-disconnected",
+    "action-rejected-engine",
+    "action-rejected-validation",
+    "action-rejected-read-only",
+    "action-rejected-non-atomic",
+    "action-rejected-mutation",
+    "action-rejected-indeterminate",
+    "action-rejected-apply-proof",
+    "action-rejected-reporting",
+    "action-rejected-unsupported"
+  ],
+  "jsonNegativeCaseIds": [
+    "duplicate-root-member",
+    "duplicate-nested-member",
+    "fractional-integer",
+    "exponent-integer",
+    "unknown-member-null-is-still-invalid",
+    "unknown-member-negative-is-still-invalid",
+    "unknown-member-fraction-is-still-invalid",
+    "unknown-member-exponent-is-still-invalid",
+    "unknown-member-unsafe-integer-is-still-invalid",
+    "unpaired-high-surrogate",
+    "root-array-is-not-a-message",
+    "duplicate-capability-offer",
+    "more-than-64-capabilities",
+    "registry-ids-must-be-unique",
+    "welcome-cannot-activate-unpublished-capability",
+    "source-over-utf8-byte-limit",
+    "range-sum-must-be-safe",
+    "duplicate-source-id",
+    "progress-completed-exceeds-total",
+    "complete-presentation-requires-coverage",
+    "unavailable-presentation-requires-reason",
+    "progress-is-only-valid-while-checking",
+    "pending-presentation-has-no-suggestions",
+    "closed-presentation-forbids-status-members",
+    "available-actions-are-duplicate-free",
+    "selection-and-source-ids-are-mutually-exclusive",
+    "selection-must-be-nonempty",
+    "visible-ranges-must-be-nonempty",
+    "visible-ranges-must-be-ordered",
+    "visible-ranges-must-not-overlap",
+    "apply-edits-must-descend",
+    "apply-edits-must-not-share-an-anchor",
+    "apply-edits-must-not-overlap",
+    "apply-edits-must-change-text",
+    "zero-length-apply-edit-must-change-text",
+    "unavailable-apply-outcome-forbids-reason",
+    "descriptor-minor-is-required",
+    "descriptor-socket-path-is-absolute",
+    "hello-capabilities-are-required",
+    "hello-requires-exact-protocol-1.0",
+    "null-does-not-substitute-for-absent-optional-intent",
+    "unknown-command-discriminator",
+    "unknown-event-discriminator",
+    "unknown-source-syntax",
+    "near-miss-source-syntax-is-still-unknown",
+    "source-syntax-is-case-sensitive",
+    "identifier-must-be-visible-ascii",
+    "identifier-over-128-bytes",
+    "identifier-cannot-end-with-newline",
+    "capability-id-requires-reverse-domain-publisher",
+    "command-sequence-zero",
+    "negative-integer-is-outside-sequence-range",
+    "command-sequence-over-uint32",
+    "invalid-fault-severity-pair",
+    "suggestion-language-display-name-is-nonempty",
+    "suggestion-check-model-display-name-is-nonempty",
+    "explanation-model-display-name-is-nonempty",
+    "explanation-language-display-name-is-nonempty",
+    "handshake-recovery-pair-is-closed",
+    "received-protocol-is-only-for-version-rejection",
+    "typed-rejection-reports-server-protocol-1-0",
+    "optional-apply-snapshot-does-not-accept-null"
+  ],
+  "frameCaseIds": [
+    "exact-hello-frame",
+    "maximum-payload-length",
+    "zero-length-frame",
+    "length-over-limit",
+    "truncated-payload",
+    "invalid-utf8",
+    "non-object-root",
+    "malformed-json",
+    "unknown-null-value",
+    "unknown-negative-number",
+    "unknown-fraction-number",
+    "unknown-exponent-number",
+    "unknown-unsafe-integer"
+  ],
+  "stateScenarioIds": [
+    "base-handshake",
+    "fatal-fault",
+    "golden-writing-session",
+    "invalid-server-inputs",
+    "markdown-hard-line-breaks",
+    "modifier-gestures",
+    "reconnect-lost-state",
+    "reconnect-resumed",
+    "sequence-exhaustion",
+    "suggestion-shortcuts",
+    "typed-rejections",
+    "unicode-scalar-coordinates"
+  ],
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "sha256": "679a0e83148ae771d229adfc6db2dc1fa4ea9ca22b5a80a2e17979b5a39dd3f2",
+      "kind": "documentation"
+    },
+    {
+      "path": "COMPATIBILITY-CLAIMS.md",
+      "sha256": "9918c2a25901b56d431c5503ae87985ac649ef91e8f58bb838c7367a3985fb24",
+      "kind": "documentation"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "f59f35a3441f9cbcfc514af638d7091bcf1610a7a25bc10a5845c02f9b2a68f1",
+      "kind": "license"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0493ef93e8927b4c3818efa3b07baa028d05c863bca92494051c0b515ed03b8f",
+      "kind": "documentation"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "bcacf711e04928dbcdac3c8ee7bc57ea0a5f194ce21a95a633fdd9016515df96",
+      "kind": "documentation"
+    },
+    {
+      "path": "SUPPORT.md",
+      "sha256": "2495d051cf293a5a1f0e2ed3610cada8d14fe3af9e60948c37f1b5adb87dedc2",
+      "kind": "documentation"
+    },
+    {
+      "path": "reference/typescript/README.md",
+      "sha256": "ab5e350c3e3c668d12ee447b595d8c9c1bf935901f1d9a6000e198bbb507e222",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/cli.ts",
+      "sha256": "ec843639acfcc825583e27d5c9941f2c8127f47a62b066ae3ad2558e26f9d33b",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/package.json",
+      "sha256": "5651ebfdccc5ea522a265a0803c4a8253b1d441c0b04418c855d84b78bc57293",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/suggestion-binding.ts",
+      "sha256": "f2e101669c54311c10de9cae83746d3398b06611ef5457ce7a588ba7836e4a71",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/suggestion-shortcut.ts",
+      "sha256": "b58deaebab0c3b2d950bdf13ed15146a8468e896ceed2297b05e5c6beccfe73e",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/transport-session.ts",
+      "sha256": "404209dad44bbff2ba28babbf19f556819030991b2f168b888f6ec7d72d330a2",
+      "kind": "reference"
+    },
+    {
+      "path": "reference/typescript/tsconfig.json",
+      "sha256": "93d4f3e8ea2a9d0b36529690927b4896d1974cb018d7a84feedb5304e97d73df",
+      "kind": "reference"
+    },
+    {
+      "path": "registry/README.md",
+      "sha256": "8139328c9c1b48d06a8e25b624004f3b773f83ffbb5e809c70f6a483e4dea9b6",
+      "kind": "registry"
+    },
+    {
+      "path": "registry/capabilities.json",
+      "sha256": "272b913f65b18cd9558ecef91e28a73ebce88f5016a6df41d1b1cef6079bd192",
+      "kind": "registry"
+    },
+    {
+      "path": "runner/README.md",
+      "sha256": "b5c94f749909ee39bc2c0a579b687f49194585f3019ea9ce435098cfdc52aae1",
+      "kind": "runner"
+    },
+    {
+      "path": "runner/conformance.py",
+      "sha256": "c779602f778453610f4772b2097098ce5571b2841be672f19ac6adeb422e935c",
+      "kind": "runner"
+    },
+    {
+      "path": "runner/update_manifest.py",
+      "sha256": "8487ae46e945438e2fdbdf50f1822f9bc978a5ff0f44957cd30354a97a2a9370",
+      "kind": "runner"
+    },
+    {
+      "path": "schema/capability-registry.schema.json",
+      "sha256": "763f5a6ab23cce91396218a7bd612ed58dcee8e569e37b19ba988952c1115d17",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/command.schema.json",
+      "sha256": "7c81e6229dd16b6ba1ca2b3d73208db5c4f85f7f8ce707a2f33eefd75e561cd0",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/endpoint-descriptor.schema.json",
+      "sha256": "b6474f39e07e56adc9163d3a4656bd48e72ced12b2e9e1146411f8666c315381",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/envelope.schema.json",
+      "sha256": "ce4a84c098d45fb2b43ab8e45c79e6be7484aee0adff7a3bc916e65c3848bbdd",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/event.schema.json",
+      "sha256": "19ac7202abfac3ae847524d439a48cc32e0989966e9747d0cd4f36f6b5317eb7",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/handshake.schema.json",
+      "sha256": "376a137330eda2b8a78abd5d4b6a065828b62163599652c658219beda72e74af",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/shared.schema.json",
+      "sha256": "67c11fa690726b1f0ecca9e4f031b0eede771127689381bef4fee6722486eb70",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/suggestion-shortcuts-v2.schema.json",
+      "sha256": "10b58d0d814e824338d75c3bffa32b789207867e90bb14447c56ee4c2b702156",
+      "kind": "schema"
+    },
+    {
+      "path": "schema/suggestion-shortcuts.schema.json",
+      "sha256": "09904751470a69cdc6f633720a047a9bbb78ce3edf410a83e07e213d0d8d05cb",
+      "kind": "schema"
+    },
+    {
+      "path": "spec/protocol.md",
+      "sha256": "3437a2fef09717d403512d374909dec9982d6f8fda6e124cc9712de7fd37d115",
+      "kind": "spec"
+    },
+    {
+      "path": "spec/suggestion-shortcuts-v1.md",
+      "sha256": "99bdf4b7831f48026ff15726485c077094870f097b0e5457bb68f8f80feea4d5",
+      "kind": "spec"
+    },
+    {
+      "path": "spec/suggestion-shortcuts-v2.md",
+      "sha256": "de63940ca66ab7f2f2d0add45928396aeab084b2df9be47c8e7703fb2799ea08",
+      "kind": "spec"
+    },
+    {
+      "path": "tests/fake_server_adapter.py",
+      "sha256": "a5a27d63355acbfa0d08ea07eb0f54756c9ffc377ef9cfd01ec24d31d5e558bd",
+      "kind": "documentation"
+    },
+    {
+      "path": "tests/test_public_seam.py",
+      "sha256": "ded519a6ff772683a057c96ff352f7feb4fc3f6db2b6a8c9872a7960b0f08ba6",
+      "kind": "documentation"
+    },
+    {
+      "path": "tests/test_suggestion_shortcuts.py",
+      "sha256": "dd6faab0e631d26f44a60d57a12179fa4283dad7e31a08aec9d5114321443523",
+      "kind": "documentation"
+    },
+    {
+      "path": "vectors/frames/framing.json",
+      "sha256": "4320f5c6fffd907d3e3e78f451c4ce2d832a95be15249a1f6b7f0acc4c623126",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/negative/portable-json.json",
+      "sha256": "2d110d876b0e653999338241616f244368b69dab04cdab2ea8366c27f855582c",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/negative/semantic-boundaries.json",
+      "sha256": "6389988e1b485c1ff5c552a2d6a18612990d6ac81dcbd156459594c3153de3b0",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/negative/shape-and-enums.json",
+      "sha256": "591179fe8b870f5613882705dc7d6b9c4413c8f91b0cbb9d72152552cce5c911",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/commands.json",
+      "sha256": "a4e3beddf23bb48a1cb74b74401e5c26586d20782c506cfdb9304dfd5d095b0f",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/discovery-and-handshake.json",
+      "sha256": "ff5e48e6d6f983943cd25c1783b161f61016ef6e58a9f92994f8e5c3d85ea265",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/enum-and-boundary-coverage.json",
+      "sha256": "de57b06a4c65bf6babb58be3d460c27dd2fa667276eeb530003b166abe280e14",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/events.json",
+      "sha256": "c505d858b0b15c49979dcef4492f2682017f598d4c7bb02b94a58b4cf36e28ff",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/fault-severity-pairs.json",
+      "sha256": "71b5041d8ba8c19363e4218c8e07e45f7ac9e5628c28129078efc99c6b0c3618",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/remaining-enums.json",
+      "sha256": "01cd59e8101b860c564991e539d5afe00f9a7c1cb5e80cd64c84db03e7c333eb",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/shortcuts/bindings-v2.json",
+      "sha256": "b88a7cbc2a0d3de005c71f6288b509d5a880b90bbd7fbdd46aec9df8b62d3ae1",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/shortcuts/bindings.json",
+      "sha256": "68a5bbbbed2fe9e8ae05d1c611197b33f4c9fcea281a57fe738fe723ecc6ed9e",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/base-handshake.json",
+      "sha256": "92795e8552bcf3d079095a1f052954480ae56407d32f161e5927f7b56bc6934d",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/fatal-fault.json",
+      "sha256": "5567aa01969d9b825b3b4a808050181a41d46f568a73bb3a7303c4ca9a5b7ac4",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/golden-writing-session.json",
+      "sha256": "a4f62e6c8060d7e748451a01126d161668bb88c1a6a9b2ea1f05854ebda11e73",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/invalid-server-inputs.json",
+      "sha256": "e9022c0dab0bad56e5be80c0894919cb855c2e4025b9fe4c1abd5d6936f5aee9",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/markdown-hard-line-breaks.json",
+      "sha256": "15782d7a8344dc337ee23adae4e9481ee10a69a9dee0d738882cd52d26951aaa",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/modifier-gestures.json",
+      "sha256": "ce0dccbaf7708682afdd6c317d62b4d4504da9f54ef96c48ad07737d7f2cf221",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/reconnect-lost-state.json",
+      "sha256": "857e06815c355fee9a9d941335fc34670a3e6a6f58746f8cb22158bd04b78a97",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/reconnect-resumed.json",
+      "sha256": "25791c80131469a35b9ae9dd0a50b38508ee6d6955a6159e73a5dcd98f2a34ba",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/sequence-exhaustion.json",
+      "sha256": "68faa3ac1cf81f5b53df052a5f3c7badf94f571fe87749da5906301ba4264154",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/suggestion-shortcuts.json",
+      "sha256": "dcc9d879d95b50f417fd8faa35cf34162f26837e1975e1dcc6ab005b4b9d04e7",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/typed-rejections.json",
+      "sha256": "07ad518239d1ea5a63ed6eb622b1d53e1345b9502a6d43b34f5da184f7d96dfc",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/state/unicode-scalar-coordinates.json",
+      "sha256": "7ab4430f30e6b6d69bda033386cc3841216aa84c0d679b8087972dcca12d1a4e",
+      "kind": "vectors"
+    }
+  ]
+}

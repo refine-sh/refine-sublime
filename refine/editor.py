@@ -386,7 +386,17 @@ class Session:
                 return suggestion['id']
         return None
 
-    def show(self, suggestion_id=None, update=False):
+    def show_clicked_suggestion(self):
+        # A click opens immediately without changing keyboard Quick Apply behavior.
+        selections = self.view.sel()
+        if (self.closed or not self.connected or not self.has_focus
+                or len(selections) != 1 or not selections[0].empty()
+                or self.view.is_auto_complete_visible()
+                or (self.view.is_popup_visible() and not self.open_suggestion)):
+            return
+        self.show()
+
+    def show(self, suggestion_id=None, update=False, hover=False):
         self.refresh()
         if suggestion_id is None and self.view.sel():
             suggestion_id = self.at(self.view.sel()[0].b)
@@ -412,7 +422,8 @@ class Session:
         else:
             revision = self.content['documentRevision']
             self.view.show_popup(html, location=self.document.coordinates.region(suggestion['activationRange'])[0],
-                max_width=640, max_height=480,
+                flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY if hover else 0,
+                max_width=560, max_height=480,
                 on_navigate=lambda action: self.action(action, suggestion_id, revision),
                 on_hide=self.popup_hidden)
 

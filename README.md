@@ -40,7 +40,8 @@ unsaved buffers work too. Refine controls automatic checks, models, and language
 Changing text sends a complete snapshot to the local app. Selecting a different
 supported buffer switches the integration to that buffer.
 
-- Hover over marked text, or run **Refine: Show Suggestion** at the caret.
+- Click within a suggestion to open its card immediately, hover over marked text,
+  or run **Refine: Show Suggestion** at the caret.
 - Review the diff and choose **Apply**, **Dismiss**, or **Explain** when available.
   Busy actions cannot be submitted twice. Reports show confirmation, and failed
   actions show feedback with retry controls.
@@ -52,6 +53,12 @@ supported buffer switches the integration to that buffer.
   check; an empty selection checks the full buffer. Multiple selections are rejected.
 - **Refine: Connection Status** shows the current state. **Refine: Reconnect**
   starts a fresh session if you need to reset it.
+
+Cards follow Refine's layout, with the suggestion type and language above the
+diff, Explain in the header, and action buttons with available shortcuts below.
+Hover cards stay open as you move toward them and close when you move away.
+Sublime controls the hover delay; clicking opens the card without that wait.
+Selecting text and keyboard Quick Apply keep their existing behavior.
 
 Apply validates the current revision and every expected string, then performs one
 native, undoable buffer replacement. **Undo** restores the original text. Changes

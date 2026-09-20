@@ -25,7 +25,7 @@ sublime.Region = Region
 sublime.scheduled = []
 sublime.set_timeout = lambda fn, delay=0: sublime.scheduled.append(fn)
 sublime.status_message = lambda message: None
-for index, name in enumerate(('DRAW_NO_OUTLINE', 'DRAW_NO_FILL', 'DRAW_STIPPLED_UNDERLINE', 'DRAW_SOLID_UNDERLINE', 'DRAW_EMPTY')):
+for index, name in enumerate(('DRAW_NO_OUTLINE', 'DRAW_NO_FILL', 'DRAW_STIPPLED_UNDERLINE', 'DRAW_SOLID_UNDERLINE', 'DRAW_EMPTY', 'HIDE_ON_MOUSE_MOVE_AWAY')):
     setattr(sublime, name, 1 << index)
 sys.modules['sublime'] = sublime
 from refine.editor import Session
@@ -312,6 +312,48 @@ class EditorTests(unittest.TestCase):
         self.assertEqual(self.session.receipts['tx']['status'], 'indeterminate')
         self.session.receive('event', event)
         self.assertEqual(self.view.replace_count, 1)
+
+    def test_click_opens_immediately_but_selection_and_other_popups_are_respected(self):
+        self.session.show_clicked_suggestion()
+        self.assertEqual(self.session.open_suggestion, self.content['suggestions'][0]['id'])
+        self.assertEqual(self.view.popup_options['flags'], 0)
+        self.view.hide_popup()
+        self.view.selection = Selection([Region(3, 8)])
+        self.session.show_clicked_suggestion()
+        self.assertFalse(self.view.popup)
+        self.view.selection = Selection([Region(6)])
+        self.view.show_popup('Another plugin')
+        self.session.show_clicked_suggestion()
+        self.assertEqual(self.view.popup, 'Another plugin')
+
+    def test_click_does_not_open_stale_or_unfocused_suggestions(self):
+        self.session.has_focus = False
+        self.session.show_clicked_suggestion()
+        self.assertFalse(self.view.popup)
+        self.session.has_focus = True
+        self.view.text += '!'
+        self.view.count += 1
+        self.session.show_clicked_suggestion()
+        self.assertFalse(self.view.popup)
+
+    def test_hover_card_allows_moving_toward_it_and_updates_keep_ownership(self):
+        suggestion_id = self.content['suggestions'][0]['id']
+        self.session.show(suggestion_id, hover=True)
+        self.assertEqual(self.view.popup_options['flags'], sublime.HIDE_ON_MOUSE_MOVE_AWAY)
+        self.session.show(suggestion_id, update=True)
+        self.assertEqual(self.session.open_suggestion, suggestion_id)
+        self.assertEqual(self.view.popup_options['flags'], sublime.HIDE_ON_MOUSE_MOVE_AWAY)
+        self.view.hide_popup()
+        self.assertIsNone(self.session.open_suggestion)
+
+    def test_card_groups_explanation_before_footer_and_shows_available_shortcuts(self):
+        html = card(self.content['suggestions'][0], self.content, 'A reason', self.session.shortcuts)
+        self.assertLess(html.index('href="explain"'), html.index('<div class="diff"'))
+        self.assertLess(html.index('A reason'), html.index('<div class="actions"'))
+        self.assertIn('class="control primary"', html)
+        for action in ('apply', 'dismiss'):
+            if self.session.shortcuts.keys[action]:
+                self.assertIn('(' + self.session.shortcuts.labels[action] + ')', html)
 
     def test_popup_escapes_source_and_explanation(self):
         suggestion = self.content['suggestions'][0]

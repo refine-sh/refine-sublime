@@ -91,12 +91,17 @@ class RefineEvents(sublime_plugin.EventListener):
         if _session and view.id() == _session.view.id():
             _session.selection_modified()
 
+    def on_post_text_command(self, view, command_name, args):
+        if (_session and view.id() == _session.view.id()
+                and command_name == 'drag_select'):
+            _session.show_clicked_suggestion()
+
     def on_hover(self, view, point, hover_zone):
         if _session and view.id() == _session.view.id() and hover_zone == sublime.HOVER_TEXT:
             _session.refresh()
             suggestion_id = _session.at(point)
             if suggestion_id:
-                _session.show(suggestion_id)
+                _session.show(suggestion_id, hover=True)
 
     def on_close(self, view):
         global _session

@@ -41,28 +41,20 @@ Node.js, or additional packages to use it.
 ### 1. Set up Refine
 
 [Download Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=readme),
-open it, and complete setup. Download a local model for offline checks, or
-configure a hosted provider in Refine.
-
-Keep Refine running while you write. This plugin does not launch the app
-automatically.
+open it, and complete setup.
 
 ### 2. Install the plugin
 
-In Sublime, choose **Preferences → Browse Packages…**. Clone this repository
-into a folder named `Refine` inside that Packages folder. For the standard macOS
-installation:
+Clone the plugin into Sublime's Packages folder:
 
 ```sh
 git clone https://github.com/refine-sh/refine-sublime.git \
   "$HOME/Library/Application Support/Sublime Text/Packages/Refine"
 ```
 
-If a `Refine` folder already exists there, update that installation rather than
-adding a second copy. Restart Sublime after installing.
+Restart Sublime after installing.
 
-To update, open a terminal in the `Refine` folder and run `git pull`, then restart
-Sublime.
+To update, run `git pull` in the `Refine` folder and restart Sublime.
 
 ### 3. Start writing
 

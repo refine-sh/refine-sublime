@@ -5,6 +5,17 @@ The installed plugin must remain compatible with Sublime’s bundled Python 3.8.
 
 ## Development
 
+To load a local checkout in Sublime, choose **Preferences → Browse Packages…**
+and create a symlink named `Refine` in that folder pointing to your checkout.
+For the standard macOS installation, run this from the repository root:
+
+```sh
+ln -s "$PWD" "$HOME/Library/Application Support/Sublime Text/Packages/Refine"
+```
+
+Use either the symlink or an existing installation, not both. Restart Sublime
+after installing.
+
 ```sh
 python3 scripts/verify.py
 python3 scripts/package.py
@@ -57,4 +68,3 @@ in **Packages**, not both. The package loads its schemas without unpacking.
 - `refine/protocol.py`: discovery, framing, handshake, and sequencing.
 - `refine/validation.py`: MIT-licensed validator extracted from `refine-protocol`.
 - `vendor/protocol`: pinned schemas, vectors, fake-server runner, and provenance.
-

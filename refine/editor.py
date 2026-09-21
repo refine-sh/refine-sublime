@@ -248,7 +248,8 @@ class Session:
             self.modifier_bridge.invalidate()
             self.check_id = event['checkId']
             self.content = content
-            self.shortcuts = Shortcuts(content['interaction']['quickApply'], self.capabilities)
+            self.shortcuts = Shortcuts(content['interaction']['quickApply'], self.capabilities,
+                                       native_monitor_available=self.modifier_bridge.monitor_available)
             self.update_activation()
             if content['status'] in ('checking', 'complete', 'unavailable'):
                 self.pending_check = None
@@ -348,7 +349,7 @@ class Session:
             self.status = 'Refine: ' + content['status']
         if self.shortcuts and self.shortcuts.messages:
             self.status += ' · ' + ' '.join(self.shortcuts.messages)
-        elif self.shortcuts and self.activation.active and content['interaction']['quickApply']['activationStyle'] == 'showTipAndHighlight':
+        elif self.shortcuts and self.shortcuts.keys['apply'] and self.activation.active and content['interaction']['quickApply']['activationStyle'] == 'showTipAndHighlight':
             self.status += ' · ' + self.shortcuts.labels['apply'] + ' to apply'
         self.view.set_status('refine', self.status)
         if self.open_suggestion:
@@ -359,6 +360,7 @@ class Session:
                 self.open_suggestion = None
 
     def render_activation(self):
+        self.modifier_bridge.poll(render=False)
         for key in ('refine.active', 'refine.tip'):
             self.view.erase_regions(key)
         if (not self.connected or not self.has_focus or self.open_suggestion
@@ -375,6 +377,8 @@ class Session:
             return
         if self.shortcuts.messages:
             tip = ' '.join(self.shortcuts.messages)
+        elif self.shortcuts.pending:
+            return
         else:
             tip = '{} to apply · {} to cancel'.format(
                 self.shortcuts.labels['apply'], self.shortcuts.labels['dismiss'])
@@ -440,6 +444,7 @@ class Session:
     def popup_hidden(self):
         self.input_epoch += 1
         self.open_suggestion = None
+        self.modifier_bridge.poll(render=False)
 
     def action(self, kind, suggestion_id=None, revision=None):
         self.refresh()
@@ -509,6 +514,7 @@ class Session:
         if blocks != before:
             self.input_epoch += 1
             self.modifier_bridge.invalidate()
+            self.modifier_bridge.poll()
 
     def shortcut_suggestion(self):
         if (self.closed or not self.has_focus or not self.connected or not self.content or not self.shortcuts

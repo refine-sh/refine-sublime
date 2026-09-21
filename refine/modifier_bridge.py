@@ -13,6 +13,7 @@ class ModifierBridge:
         self.owner_id = None
         self.signature = None
         self.available = False
+        self.monitor_available = None
         self.renewed_at = 0
         self.generation = 0
 
@@ -33,6 +34,7 @@ class ModifierBridge:
         self.owner_id = None
         self.signature = None
         self.available = False
+        self.monitor_available = None
 
     def invalidate(self):
         if self.owner_id and self.session.connected and not self.session.closed:
@@ -67,7 +69,7 @@ class ModifierBridge:
                 session.check_id, suggestion['id'], session.open_suggestion,
                 tuple((region.a, region.b) for region in session.view.sel()), keys)
 
-    def poll(self):
+    def poll(self, render=True):
         session = self.session
         if not session.connected or session.closed or MODIFIER_BRIDGE not in session.capabilities:
             return
@@ -76,22 +78,26 @@ class ModifierBridge:
         if changed:
             self.signature = current
             self.owner_id = identifier()
-            self.set_available(False)
+            self.available = False
+            self.rebuild_shortcuts()
         if changed or (current and time.monotonic() - self.renewed_at >= 0.5):
             self.renewed_at = time.monotonic()
             session.send({'type': 'setModifierShortcutOwner', 'owner': {
                 'ownerId': self.owner_id, 'processId': os.getppid(),
                 'keys': list(current[-1]) if current else []}})
+        if changed and render and session.content:
+            session.render()
 
     def rebuild_shortcuts(self):
         session = self.session
         if session.content and session.shortcuts:
             session.shortcuts = Shortcuts(session.content['interaction']['quickApply'],
-                                          session.capabilities, self.available)
+                                          session.capabilities, self.available, self.monitor_available)
 
     def set_available(self, available):
-        if self.available == available:
+        if self.available == available and self.monitor_available == available:
             return
+        self.monitor_available = available
         self.available = available
         self.rebuild_shortcuts()
         self.session.render()

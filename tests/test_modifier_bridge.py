@@ -112,3 +112,74 @@ class ModifierBridgeTests(unittest.TestCase):
         self.assertIsNone(self.bridge.current())
         self.session.modifier_input_command('clear_fields')
         self.assertIsNotNone(self.bridge.current())
+
+    def test_pending_confirmation_keeps_highlight_without_unsupported_or_hint(self):
+        self.session.render()
+        self.assertIn('refine.active', self.view.regions)
+        self.assertNotIn('refine.tip', self.view.regions)
+        self.assertFalse(self.session.shortcuts.messages)
+        self.assertNotIn('unsupported', self.session.status)
+        self.assertNotIn('Left Shift to apply', self.session.status)
+        self.assertTrue(any(c['type'] == 'setModifierShortcutOwner' and c['owner']['keys']
+                            for c in self.session.transport.commands))
+
+    def test_new_owner_retains_monitor_support_but_waits_for_its_ack(self):
+        self.arm()
+        old = self.owner
+        self.session.selection_modified()
+        self.assertNotEqual(old, self.bridge.owner_id)
+        self.assertTrue(self.bridge.monitor_available)
+        self.assertFalse(self.bridge.available)
+        self.assertNotIn('refine.tip', self.view.regions)
+        self.assertFalse(self.session.shortcuts.messages)
+        self.session.transport.commands.clear()
+        self.bridge.receive({'type': 'modifierShortcutAvailability', 'state': {'ownerId': old, 'available': True}})
+        self.press(owner=old)
+        self.assertFalse(self.bridge.available)
+        self.assertEqual(self.session.transport.commands, [])
+        self.owner = self.bridge.owner_id
+        self.bridge.receive({'type': 'modifierShortcutAvailability', 'state': {'ownerId': self.owner, 'available': True}})
+        self.assertIn('refine.tip', self.view.regions)
+
+    def test_pending_card_has_plain_actions_and_permission_loss_is_unavailable(self):
+        self.session.show(self.content['suggestions'][0]['id'])
+        self.assertNotIn('unsupported', self.view.popup)
+        self.assertNotIn('Left Shift', self.view.popup)
+        self.arm()
+        self.assertIn('Left Shift', self.view.popup)
+        self.bridge.receive({'type': 'modifierShortcutAvailability', 'state': {'ownerId': self.owner, 'available': False}})
+        self.assertNotIn('unsupported', self.view.popup)
+        self.assertIn('monitoring unavailable', self.view.popup)
+        self.assertIsNone(self.session.shortcuts.keys['apply'])
+
+    def test_rapid_owner_changes_ignore_both_stale_success_and_stale_failure(self):
+        self.arm()
+        oldest = self.owner
+        for _ in range(3):
+            self.session.selection_modified()
+        current = self.bridge.owner_id
+        self.assertNotEqual(oldest, current)
+        for available in (False, True):
+            self.bridge.receive({'type': 'modifierShortcutAvailability', 'state': {'ownerId': oldest, 'available': available}})
+            self.assertTrue(self.bridge.monitor_available)
+            self.assertFalse(self.bridge.available)
+        self.bridge.receive({'type': 'modifierShortcutAvailability', 'state': {'ownerId': current, 'available': True}})
+        self.assertTrue(self.bridge.available)
+
+    def test_regular_escape_works_while_native_apply_is_pending(self):
+        quick = self.content['interaction']['quickApply']
+        quick['dismissShortcut'] = {'kind': 'keyCombination', 'code': 'Escape', 'key': 'Escape', 'modifiers': [], 'label': 'Esc'}
+        self.session.shortcuts = Shortcuts(quick, self.session.capabilities)
+        self.session.render()
+        self.assertIsNone(self.session.shortcuts.keys['apply'])
+        self.assertEqual(self.session.shortcuts.keys['dismiss'], 'escape')
+        self.session.perform_shortcut('escape')
+        self.assertIsNone(self.session.activation.active)
+
+    def test_monitor_status_survives_invalidation_but_not_reconnect(self):
+        self.arm()
+        self.bridge.invalidate()
+        self.assertTrue(self.bridge.monitor_available)
+        self.assertFalse(self.bridge.available)
+        self.bridge.stop()
+        self.assertIsNone(self.bridge.monitor_available)

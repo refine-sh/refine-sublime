@@ -2,6 +2,10 @@
 
 ## 0.2.0 — development
 
+- Keep native modifier hints hidden while a new suggestion awaits confirmation,
+  without flashing an unsupported warning. Request ownership immediately and
+  distinguish pending readiness from unavailable keyboard monitoring.
+
 - Support standalone Left/Right Shift, Option, and Control through Refine's native
   monitor when the optional modifier bridge capability is negotiated. Older apps
   retain regular shortcuts and explicit unsupported feedback.

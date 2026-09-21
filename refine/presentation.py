@@ -29,8 +29,13 @@ def card(suggestion, content, explanation='', shortcuts=None, feedback=None, exp
             controls[action] = '<span class="control meta">' + label + '</span>'
         else:
             label = 'Retry ' + action if state == 'error' else action.title()
-            if shortcuts and action in ('apply', 'dismiss') and shortcuts.keys[action]:
-                label += ' (' + shortcuts.labels[action] + ')'
+            if shortcuts and action in ('apply', 'dismiss'):
+                if shortcuts.keys[action]:
+                    label += ' (' + shortcuts.labels[action] + ')'
+                elif action in shortcuts.unavailable:
+                    label += ' (' + shortcuts.labels[action] + ' · unavailable)'
+                elif action not in shortcuts.pending and not shortcuts.has_conflict:
+                    label += ' (' + shortcuts.labels[action] + ' · unsupported)'
             style = 'control primary' if action == 'apply' else 'control'
             controls[action] = '<a href="{}" class="{}">{}</a>'.format(action, style, escape(label))
     messages = ''

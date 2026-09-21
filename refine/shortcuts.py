@@ -93,9 +93,11 @@ def conflicts(left, right):
 
 
 class Shortcuts:
-    def __init__(self, quick, capabilities, native_available=False):
+    def __init__(self, quick, capabilities, native_available=False, native_monitor_available=None):
         self.keys = {}
         self.native_keys = {}
+        self.pending = set()
+        self.unavailable = set()
         self.labels = {}
         self.messages = []
         negotiated = V1 in capabilities or V2 in capabilities
@@ -110,16 +112,25 @@ class Shortcuts:
                     self.native_keys[action] = binding['code']
                     if native_available:
                         key = binding['code']
+                    elif native_monitor_available is False:
+                        self.unavailable.add(action)
+                    else:
+                        self.pending.add(action)
                 self.labels[action] = binding['label']
             else:
                 legacy = quick[action + 'Key']
                 key = LEGACY_KEYS.get(legacy)
                 self.labels[action] = legacy
             self.keys[action] = key
-            if key is None:
-                self.messages.append('{} shortcut unavailable in Sublime Text: {}. Choose a key combination in Refine.'.format(action.title(), self.labels[action]))
-        if (negotiated and conflicts(bindings['apply'], bindings['dismiss'])) or (
-                self.keys['apply'] is not None and self.keys['apply'] == self.keys['dismiss']):
+            if action in self.unavailable:
+                self.messages.append('{}: {} (keyboard monitoring unavailable in Refine)'.format(action.title(), self.labels[action]))
+            elif key is None and action not in self.pending:
+                self.messages.append('{}: {} (unsupported)'.format(action.title(), self.labels[action]))
+        self.has_conflict = (negotiated and conflicts(bindings['apply'], bindings['dismiss'])) or (
+            self.keys['apply'] is not None and self.keys['apply'] == self.keys['dismiss'])
+        if self.has_conflict:
+            self.pending.clear()
+            self.unavailable.clear()
             self.native_keys = {}
             self.keys = {'apply': None, 'dismiss': None}
             self.messages = ['Apply and Dismiss shortcuts conflict. Choose different shortcuts in Refine.']

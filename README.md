@@ -71,9 +71,16 @@ label indicates partial coverage. Refine reconnects automatically after a restar
 ## Keyboard bindings and appearance
 
 Apply and Dismiss follow regular key combinations configured in Refine.
-Standalone modifier keys (including Left Shift), modifier chords, and double-tap
-gestures are unavailable; the popup explains this without substituting a key.
-Choose a regular combination in Refine or use the popup/Command Palette actions.
+With a compatible Refine app and Input Monitoring permission, standalone
+Left/Right Shift, Option, and Control also work through a negotiated native
+bridge. Older Refine versions retain regular key combinations and mark standalone
+modifiers unavailable. Pointer actions remain usable; no alternate key is assigned.
+Modifier chords and double-taps remain unsupported.
+
+Standalone modifiers fire on press, including when beginning shifted text.
+The plugin rejects stale owners and yields to autocomplete, overlays, panels,
+and snippet editing. Native modifier shortcuts are conservatively disabled
+while an editor panel is open.
 
 The native modifier listener was removed after a crash in Sublime's bundled
 ARM64 Python 3.8 when macOS invoked its ctypes callback. The plugin uses Sublime
@@ -156,14 +163,16 @@ Manual smoke test before release:
 8. Disable automatic checks in Refine and verify typing alone does not request a
    manual check. Check a selection explicitly.
 9. Try CRLF, emoji, combining characters, read-only buffers, and a buffer over 1 MiB.
-10. Configure Left Shift for Apply and Escape for Dismiss. Verify the popup marks
-    Left Shift unavailable, the Apply button still works, and Escape dismisses the
-    open card. Then configure Option+Right for Apply and verify that combination.
+10. Configure Left Shift for Apply and Escape for Dismiss. With a compatible
+    Refine app and Input Monitoring permission, verify Left Shift applies once
+    and Right Shift does not. Test focus changes, panels, reconnect, and denied
+    permission. With an older app, Left Shift stays unavailable while the Apply
+    button, Escape, and Option+Right keep working.
 11. With the companion Refine app change, verify Sublime's plugin owns its native
     checks while Obsidian and unrelated applications retain their own behavior.
 
 The current scope excludes code-comment extraction, other operating systems,
-background checking of all tabs, standalone modifiers, and modifier chords/double-tap gestures.
+background checking of all tabs, and modifier chords/double-tap gestures.
 
 ## Layout
 

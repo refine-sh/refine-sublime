@@ -2,6 +2,12 @@
 
 ## 0.2.0 — development
 
+- Support standalone Left/Right Shift, Option, and Control through Refine's native
+  monitor when the optional modifier bridge capability is negotiated. Older apps
+  retain regular shortcuts and explicit unsupported feedback.
+- Keep native modifier ownership connection-local and reject stale triggers after
+  source, selection, focus, suggestion, settings, or connection changes.
+
 - Add busy action controls, duplicate-request guards, report confirmation, and
   inline failures with retry controls.
 - Format explanation Markdown and display explanation model/language attribution
@@ -14,7 +20,7 @@
   incoming explanation updates. Show progress as soon as Explain is requested.
 
 - Synchronize Apply/Dismiss shortcuts with Refine through negotiated v1/v2 settings.
-- Support regular key combinations. Standalone modifiers are unavailable.
+- Support regular key combinations; standalone modifiers require the negotiated native bridge.
 - Remove the native modifier callback that crashed Sublime’s ARM64 Python host
   on incoming modifier events; retain popup actions and regular shortcuts.
 - Keep shortcut ownership local to live suggestions and distinguish card Dismiss

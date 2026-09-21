@@ -7,7 +7,7 @@ import sublime_plugin
 if '_session' in globals():
     import importlib
     import sys
-    for _name in ('shortcuts', 'protocol', 'transport', 'markdown', 'presentation', 'editor'):
+    for _name in ('shortcuts', 'protocol', 'transport', 'markdown', 'presentation', 'modifier_bridge', 'editor'):
         _module = __package__ + '.refine.' + _name
         if _module in sys.modules:
             importlib.reload(sys.modules[_module])
@@ -24,6 +24,10 @@ def activate(view):
     if _store is None or sublime.platform() != 'osx' or not view or not view.is_valid():
         return None
     if view.settings().get('is_widget'):
+        if _session:
+            _session.has_focus = False
+            _session.input_epoch += 1
+            _session.modifier_bridge.invalidate()
         return _session
     syntax = syntax_for(view)
     if _session and (_session.closed or not syntax or _session.view.buffer_id() != view.buffer_id()):
@@ -33,6 +37,7 @@ def activate(view):
         return None
     if _session:
         _session.has_focus = True
+        _session.modifier_input_blocks.discard('overlay')
         _session.input_epoch += 1
         _session.attach_view(view)
     else:
@@ -76,6 +81,7 @@ class RefineEvents(sublime_plugin.EventListener):
         if _session and view.id() == _session.view.id():
             _session.has_focus = False
             _session.input_epoch += 1
+            _session.modifier_bridge.invalidate()
             _session.activation.cancel()
             _session.render_activation()
 
@@ -90,6 +96,14 @@ class RefineEvents(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
         if _session and view.id() == _session.view.id():
             _session.selection_modified()
+
+    def on_window_command(self, window, command_name, args):
+        if _session and _session.view.window() == window:
+            _session.modifier_input_command(command_name)
+
+    def on_text_command(self, view, command_name, args):
+        if _session and view.id() == _session.view.id():
+            _session.modifier_input_command(command_name)
 
     def on_post_text_command(self, view, command_name, args):
         if (_session and view.id() == _session.view.id()

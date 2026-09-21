@@ -3,7 +3,9 @@ from .validation import ConformanceError, validate_portable_value, validate_with
 
 V1 = 'com.runjuu.refine.suggestion-shortcuts.v1'
 V2 = 'com.runjuu.refine.suggestion-shortcuts.v2'
-CAPABILITIES = [V1, V2]
+MODIFIER_BRIDGE = 'com.runjuu.refine.standalone-modifier-shortcuts.v1'
+STANDALONE = {'ShiftLeft', 'ShiftRight', 'AltLeft', 'AltRight', 'ControlLeft', 'ControlRight'}
+CAPABILITIES = [V1, V2, MODIFIER_BRIDGE]
 LEGACY_KEYS = {'tab': 'tab', 'escape': 'escape', 'return': 'enter', 'space': 'space',
                'delete': 'backspace', 'leftArrow': 'left', 'rightArrow': 'right',
                'upArrow': 'up', 'downArrow': 'down'}
@@ -91,8 +93,9 @@ def conflicts(left, right):
 
 
 class Shortcuts:
-    def __init__(self, quick, capabilities):
+    def __init__(self, quick, capabilities, native_available=False):
         self.keys = {}
+        self.native_keys = {}
         self.labels = {}
         self.messages = []
         negotiated = V1 in capabilities or V2 in capabilities
@@ -102,6 +105,11 @@ class Shortcuts:
                 binding = quick[action + 'Shortcut']
                 bindings[action] = binding
                 key = sublime_key(binding)
+                if (MODIFIER_BRIDGE in capabilities and binding.get('kind', 'keyCombination') == 'keyCombination'
+                        and binding['code'] in STANDALONE and not binding['modifiers']):
+                    self.native_keys[action] = binding['code']
+                    if native_available:
+                        key = binding['code']
                 self.labels[action] = binding['label']
             else:
                 legacy = quick[action + 'Key']
@@ -112,6 +120,7 @@ class Shortcuts:
                 self.messages.append('{} shortcut unavailable in Sublime Text: {}. Choose a key combination in Refine.'.format(action.title(), self.labels[action]))
         if (negotiated and conflicts(bindings['apply'], bindings['dismiss'])) or (
                 self.keys['apply'] is not None and self.keys['apply'] == self.keys['dismiss']):
+            self.native_keys = {}
             self.keys = {'apply': None, 'dismiss': None}
             self.messages = ['Apply and Dismiss shortcuts conflict. Choose different shortcuts in Refine.']
 

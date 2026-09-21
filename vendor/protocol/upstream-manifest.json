@@ -5,9 +5,9 @@
     "major": 1,
     "minor": 0
   },
-  "artifactDigest": "2d04d785f611f3afe3425bde4d505e2baa23f4500adc4cce9e46fb9b3a97a365",
-  "baseArtifactDigest": "c20ac8e2ec90abf6886ae27158bfe822b616cf236b90ca47a1797932cfc9497e",
-  "capabilityRegistryDigest": "272b913f65b18cd9558ecef91e28a73ebce88f5016a6df41d1b1cef6079bd192",
+  "artifactDigest": "07bb63547240cb721003e5ebb1116aefebc9369150a4757078b3a264e27d1f07",
+  "baseArtifactDigest": "20bbe7f66f4445936a8db28215d10d8a75a4db3fdfeaade40127999129f11b1d",
+  "capabilityRegistryDigest": "18fed80f891ed6292328487bb19f2270530674f42dbd0991325da58b7243496b",
   "jsonPositiveCaseIds": [
     "command-open-document",
     "command-replace-document-two-sources",
@@ -149,7 +149,11 @@
     "action-rejected-indeterminate",
     "action-rejected-apply-proof",
     "action-rejected-reporting",
-    "action-rejected-unsupported"
+    "action-rejected-unsupported",
+    "modifier-owner",
+    "modifier-revoke",
+    "modifier-availability",
+    "modifier-press"
   ],
   "jsonNegativeCaseIds": [
     "duplicate-root-member",
@@ -213,7 +217,11 @@
     "handshake-recovery-pair-is-closed",
     "received-protocol-is-only-for-version-rejection",
     "typed-rejection-reports-server-protocol-1-0",
-    "optional-apply-snapshot-does-not-accept-null"
+    "optional-apply-snapshot-does-not-accept-null",
+    "modifier-invalid-process",
+    "modifier-duplicate-keys",
+    "modifier-nonmodifier",
+    "modifier-too-many"
   ],
   "frameCaseIds": [
     "exact-hello-frame",
@@ -317,7 +325,7 @@
     },
     {
       "path": "registry/capabilities.json",
-      "sha256": "272b913f65b18cd9558ecef91e28a73ebce88f5016a6df41d1b1cef6079bd192",
+      "sha256": "18fed80f891ed6292328487bb19f2270530674f42dbd0991325da58b7243496b",
       "kind": "registry"
     },
     {
@@ -342,7 +350,7 @@
     },
     {
       "path": "schema/command.schema.json",
-      "sha256": "7c81e6229dd16b6ba1ca2b3d73208db5c4f85f7f8ce707a2f33eefd75e561cd0",
+      "sha256": "b27ce22b1cfbebefec11ba25a33ad3bc1cccfdef8e3a4833b4c59cab0d173ce7",
       "kind": "schema"
     },
     {
@@ -357,7 +365,7 @@
     },
     {
       "path": "schema/event.schema.json",
-      "sha256": "19ac7202abfac3ae847524d439a48cc32e0989966e9747d0cd4f36f6b5317eb7",
+      "sha256": "89a4360f05b49f544ead693ccc0b5e18bfaa62638176f658c5443b1c11833484",
       "kind": "schema"
     },
     {
@@ -383,6 +391,11 @@
     {
       "path": "spec/protocol.md",
       "sha256": "3437a2fef09717d403512d374909dec9982d6f8fda6e124cc9712de7fd37d115",
+      "kind": "spec"
+    },
+    {
+      "path": "spec/standalone-modifier-shortcuts-v1.md",
+      "sha256": "c6c4f08d727732b6494df32d8a55d1632e535f2d68ec26f671f37d5a08be1b05",
       "kind": "spec"
     },
     {
@@ -431,6 +444,11 @@
       "kind": "vectors"
     },
     {
+      "path": "vectors/json/negative/standalone-modifiers.json",
+      "sha256": "5649a6964fe11e355d1cb03f59ebf5020fef26111991cf0d9724b1bdbf23198a",
+      "kind": "vectors"
+    },
+    {
       "path": "vectors/json/positive/commands.json",
       "sha256": "a4e3beddf23bb48a1cb74b74401e5c26586d20782c506cfdb9304dfd5d095b0f",
       "kind": "vectors"
@@ -458,6 +476,11 @@
     {
       "path": "vectors/json/positive/remaining-enums.json",
       "sha256": "01cd59e8101b860c564991e539d5afe00f9a7c1cb5e80cd64c84db03e7c333eb",
+      "kind": "vectors"
+    },
+    {
+      "path": "vectors/json/positive/standalone-modifiers.json",
+      "sha256": "ff93d85ba71cc3d4ca267c56b3ca187d2f251545b4f6cfc2f8973ad2872a72c9",
       "kind": "vectors"
     },
     {

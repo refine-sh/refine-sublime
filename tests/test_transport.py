@@ -40,7 +40,8 @@ class TransportTests(unittest.TestCase):
                         self.assertEqual(hello['client']['id'], 'refine-sublime')
                         self.assertEqual(set(hello['capabilities']), {
                             'com.runjuu.refine.suggestion-shortcuts.v1',
-                            'com.runjuu.refine.suggestion-shortcuts.v2'})
+                            'com.runjuu.refine.suggestion-shortcuts.v2',
+                            'com.runjuu.refine.standalone-modifier-shortcuts.v1'})
                         self.assertNotIn('leftShift', hello['hostCapabilities']['interceptableSuggestionActionKeys'])
                         connection.sendall(encode_frame({'type': 'welcome', 'protocol': {'major': 1, 'minor': 0},
                             'serverEpoch': 'epoch', 'runResumed': False, 'capabilities': [],

@@ -8,6 +8,7 @@ from .transport import Transport
 from .validation import ConformanceError
 from .presentation import card
 from .shortcuts import Shortcuts, QuickActivation
+from .modifier_bridge import ModifierBridge
 
 REGION_KEYS = ('refine.grammar', 'refine.fluency', 'refine.mixed', 'refine.active', 'refine.tip')
 
@@ -36,6 +37,8 @@ class Session:
         self.check_id = None
         self.input_epoch = 0
         self.has_focus = True
+        self.modifier_input_blocks = set()
+        self.modifier_bridge = ModifierBridge(self)
         self.open_suggestion = None
         self.explanation = ''
         self.explanation_attribution = None
@@ -70,6 +73,7 @@ class Session:
 
     def clear_presentation(self):
         self.input_epoch += 1
+        self.modifier_bridge.invalidate()
         self.activation.cancel()
         self.shortcuts = None
         for key in REGION_KEYS:
@@ -86,6 +90,7 @@ class Session:
 
     def close(self):
         self.closed = True
+        self.modifier_bridge.stop()
         self.clear_presentation()
         self.view.erase_status('refine')
         self.transport.stop()
@@ -206,8 +211,10 @@ class Session:
                 self.status = 'Refine: connected'
                 self.view.set_status('refine', self.status)
                 self.sync(resumed=payload['runResumed'])
+                self.modifier_bridge.start()
             elif kind == 'disconnected':
                 self.connected = False
+                self.modifier_bridge.stop()
                 self.sent_revision = None
                 self.clear_presentation()
                 self.actions.clear()
@@ -223,7 +230,9 @@ class Session:
 
     def event(self, event):
         kind = event['type']
-        if kind == 'presentationContentReplaced':
+        if kind in ('modifierShortcutAvailability', 'modifierShortcutPressed'):
+            self.modifier_bridge.receive(event)
+        elif kind == 'presentationContentReplaced':
             self.refresh()
             content = event['content']
             if content['documentRevision'] != self.document.snapshot['revision']:
@@ -236,6 +245,7 @@ class Session:
                 for span in [suggestion['activationRange']] + suggestion['highlightRanges']:
                     self.document.coordinates.region(span)
             self.input_epoch += 1
+            self.modifier_bridge.invalidate()
             self.check_id = event['checkId']
             self.content = content
             self.shortcuts = Shortcuts(content['interaction']['quickApply'], self.capabilities)
@@ -483,7 +493,24 @@ class Session:
         self.activation.update(self.content, self.check_id, selection,
                                card=bool(self.open_suggestion), explicit=explicit)
 
-    def shortcut_action(self, key):
+    def modifier_input_command(self, command):
+        blocks = self.modifier_input_blocks
+        before = set(blocks)
+        if command == 'show_overlay':
+            blocks.add('overlay')
+        elif command == 'hide_overlay':
+            blocks.discard('overlay')
+        elif command == 'insert_snippet':
+            blocks.add('snippet')
+        elif command == 'clear_fields':
+            blocks.discard('snippet')
+        elif command == 'toggle_record_macro':
+            blocks.symmetric_difference_update({'macro'})
+        if blocks != before:
+            self.input_epoch += 1
+            self.modifier_bridge.invalidate()
+
+    def shortcut_suggestion(self):
         if (self.closed or not self.has_focus or not self.connected or not self.content or not self.shortcuts
                 or self.view.change_count() != self.document.stamp):
             return None
@@ -495,6 +522,12 @@ class Session:
         # The card owns its actions independently of Quick Apply enablement.
         suggestion_id = self.open_suggestion or self.activation.active
         suggestion = self.suggestion(suggestion_id)
+        if not suggestion:
+            return None
+        return suggestion
+
+    def shortcut_action(self, key):
+        suggestion = self.shortcut_suggestion()
         if not suggestion:
             return None
         for action in ('apply', 'dismiss'):

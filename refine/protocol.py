@@ -11,7 +11,7 @@ from .validation import (ConformanceError, SchemaStore, MAX_FRAME_BYTES,
                          strict_loads, validate_portable_value,
                          validate_with_schema, validate_semantics)
 
-from .shortcuts import CAPABILITIES, V1, V2, validate_presentation_shortcuts
+from .shortcuts import MODIFIER_BRIDGE, CAPABILITIES, V1, V2, validate_presentation_shortcuts
 
 PROTOCOL = {"major": 1, "minor": 0}
 DESCRIPTOR = Path.home() / "Library/Application Support/com.runjuu.refine/Integrations/endpoint.json"
@@ -114,6 +114,8 @@ class Connection:
             activated = set(response['capabilities'])
             if not activated <= set(hello['capabilities']) or {V1, V2} <= activated:
                 raise ConformanceError('handshake', 'Unoffered or conflicting shortcut capabilities')
+            if MODIFIER_BRIDGE in activated and not activated & {V1, V2}:
+                raise ConformanceError('handshake', 'Modifier bridge requires shortcut negotiation')
             self.capabilities = activated
             self.welcome = response
         except Exception:
@@ -127,6 +129,8 @@ class Connection:
 
     def send_envelope(self, envelope):
         validate(envelope, 'schema/envelope.schema.json#/$defs/commandEnvelope', self.store)
+        if envelope['command']['type'] == 'setModifierShortcutOwner' and MODIFIER_BRIDGE not in self.capabilities:
+            raise ConformanceError('capability', 'Unnegotiated modifier bridge command')
         if envelope['sequence'] != self.command_sequence:
             raise ConformanceError('sequence', 'Invalid command sequence')
         self.socket.sendall(encode_frame(envelope))
@@ -139,6 +143,8 @@ class Connection:
         validate(envelope, 'schema/envelope.schema.json#/$defs/eventEnvelope', self.store)
         if envelope['epoch'] != self.epoch or envelope['sequence'] != self.event_sequence:
             raise ConformanceError('sequence', 'Invalid event epoch or sequence')
+        if envelope['event']['type'] in ('modifierShortcutAvailability', 'modifierShortcutPressed') and MODIFIER_BRIDGE not in self.capabilities:
+            raise ConformanceError('capability', 'Unnegotiated modifier bridge event')
         if envelope['event']['type'] == 'presentationContentReplaced':
             validate_presentation_shortcuts(envelope['event']['content'], self.capabilities, self.store)
         self.event_sequence += 1

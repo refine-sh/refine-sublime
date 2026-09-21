@@ -15,6 +15,11 @@
       "id": "com.runjuu.refine.suggestion-shortcuts.v2",
       "specification": "spec/suggestion-shortcuts-v2.md",
       "digest": "de63940ca66ab7f2f2d0add45928396aeab084b2df9be47c8e7703fb2799ea08"
+    },
+    {
+      "id": "com.runjuu.refine.standalone-modifier-shortcuts.v1",
+      "specification": "spec/standalone-modifier-shortcuts-v1.md",
+      "digest": "c6c4f08d727732b6494df32d8a55d1632e535f2d68ec26f671f37d5a08be1b05"
     }
   ]
 }

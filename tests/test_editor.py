@@ -348,12 +348,42 @@ class EditorTests(unittest.TestCase):
 
     def test_card_groups_explanation_before_footer_and_shows_available_shortcuts(self):
         html = card(self.content['suggestions'][0], self.content, 'A reason', self.session.shortcuts)
-        self.assertLess(html.index('href="explain"'), html.index('<div class="diff"'))
+        self.assertLess(html.index('<div class="diff"'), html.index('href="apply"'))
+        self.assertLess(html.index('href="apply"'), html.index('href="dismiss"'))
+        self.assertLess(html.index('href="dismiss"'), html.index('href="explain"'))
         self.assertLess(html.index('A reason'), html.index('<div class="actions"'))
         self.assertIn('class="control primary"', html)
         for action in ('apply', 'dismiss'):
             if self.session.shortcuts.keys[action]:
                 self.assertIn('(' + self.session.shortcuts.labels[action] + ')', html)
+
+    def test_card_strikes_deletions_inline_without_changing_source(self):
+        suggestion = self.content['suggestions'][0]
+        suggestion['diff'] = [
+            {'kind': 'delete', 'text': 'ho'},
+            {'kind': 'insert', 'text': 'how'},
+            {'kind': 'unchanged', 'text': ' are '},
+            {'kind': 'delete', 'text': 'yoo'},
+            {'kind': 'insert', 'text': 'you'},
+            {'kind': 'unchanged', 'text': '?'},
+        ]
+        html = card(suggestion, self.content)
+        self.assertIn('>h\u0336o\u0336</span><span', html)
+        self.assertIn('>how</span> are ', html)
+        self.assertIn('>y\u0336o\u0336o\u0336</span><span', html)
+        self.assertIn('>you</span>?', html)
+        self.assertEqual(suggestion['diff'][0]['text'], 'ho')
+        self.assertEqual(suggestion['diff'][3]['text'], 'yoo')
+
+    def test_struck_deletions_escape_html_and_preserve_accents_and_line_breaks(self):
+        suggestion = self.content['suggestions'][0]
+        source = '<a> & e\u0301\n👩‍💻'
+        suggestion['diff'] = [{'kind': 'delete', 'text': source}]
+        self.content['appearance']['diff']['showHiddenWhitespace'] = False
+        html = card(suggestion, self.content)
+        self.assertIn('&lt;a\u0336&gt; &amp;\u0336 e\u0301\u0336<br>👩‍💻', html)
+        self.assertNotIn('<a>', html)
+        self.assertEqual(suggestion['diff'][0]['text'], source)
 
     def test_popup_escapes_source_and_explanation(self):
         suggestion = self.content['suggestions'][0]

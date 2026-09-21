@@ -1,58 +1,86 @@
-# Refine for Sublime Text
+<div align="center">
+  <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=readme">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://refine.sh/icon-dark.png">
+      <img src="https://refine.sh/icon.png" width="128" alt="Refine icon">
+    </picture>
+  </a>
+  <h1>Refine for Sublime Text</h1>
+  <p><strong>A local-first AI grammar checker and writing assistant for Sublime Text, powered by <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=readme">Refine</a>.</strong></p>
+  <p>
+    <a href="https://www.sublimetext.com/"><img src="https://img.shields.io/badge/Sublime_Text-4-FF9800?logo=sublimetext&logoColor=white" alt="Sublime Text 4"></a>
+    <img src="https://img.shields.io/badge/platform-macOS-111111?logo=apple" alt="macOS">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+  </p>
+</div>
 
-Grammar, spelling, and fluency suggestions in Sublime Text, powered by the
-Refine app on your Mac. This is the development version (0.2.0).
+Refine brings contextual grammar, spelling, and fluency suggestions to Sublime
+Text. With a downloaded local model, you can check your writing entirely offline
+without leaving your editor.
+
+Features:
+
+- Private, offline writing checks powered by a local LLM on your Mac
+- Inline highlights and suggestion cards with readable diffs
+- Explanations with formatting, language, and model details
+- Undoable corrections and keyboard shortcuts for reviewing suggestions
+- Markdown and plain text, including unsaved buffers
 
 ## Requirements
 
-- Sublime Text 4 on macOS (build 4107 or newer).
-- Refine for Mac running and configured, with Integration Protocol 1.0 support.
-- For exclusive ownership of native writing checks inside Sublime, use a Refine
-  build containing the `refine-sublime` / `sublime` host registration.
+- Sublime Text 4 on macOS, build 4107 or newer
+- [Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=readme), running and configured with Integration Protocol 1.0 support
 
-The plugin uses Sublime's bundled Python. No pip packages, Node, helper executable,
-or separately installed Python are needed to use it. Python 3 is needed only for
-development commands below.
+This plugin is currently a development version. To let the plugin take over
+writing checks in Sublime from Refine's native integration, use a Refine build
+that includes the Sublime Text host registration.
 
-## Install from this checkout
+The plugin uses Sublime's bundled Python. You do not need to install Python,
+Node.js, or additional packages to use it.
 
-In Sublime, choose **Preferences → Browse Packages…**. Create a `Refine` symlink
-inside that Packages folder pointing to this checkout. For the standard macOS path:
+## Quick start
+
+### 1. Set up Refine
+
+[Download Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=readme),
+open it, and complete setup. Download a local model for offline checks, or
+configure a hosted provider in Refine.
+
+Keep Refine running while you write. This plugin does not launch the app
+automatically.
+
+### 2. Install the plugin
+
+In Sublime, choose **Preferences → Browse Packages…**. Clone this repository
+into a folder named `Refine` inside that Packages folder. For the standard macOS
+installation:
 
 ```sh
-mkdir -p "$HOME/Library/Application Support/Sublime Text/Packages"
-ln -s "$HOME/code/refine-sublime" "$HOME/Library/Application Support/Sublime Text/Packages/Refine"
+git clone https://github.com/refine-sh/refine-sublime.git \
+  "$HOME/Library/Application Support/Sublime Text/Packages/Refine"
 ```
 
-If `Refine` already exists there, inspect it before replacing it. Restart Sublime
-if it was already running. Open Refine for Mac yourself; the plugin never launches
-it automatically.
+If you already have a checkout at `~/code/refine-sublime`, link it instead:
 
-Alternatively, run `python3 scripts/package.py`, then copy
-`dist/Refine.sublime-package` into Sublime's **Installed Packages** folder. Use
-one installation method at a time. The ZIP package loads its bundled schemas
-through Sublime's resource API and works without unpacking.
+```sh
+ln -s "$HOME/code/refine-sublime" \
+  "$HOME/Library/Application Support/Sublime Text/Packages/Refine"
+```
 
-## Use
+Choose one method. If a `Refine` folder already exists there, use that installation
+rather than adding a second copy. Restart Sublime after installing.
 
-Open a Markdown or plain-text buffer. Only the active supported buffer is checked;
-unsaved buffers work too. Refine controls automatic checks, models, and languages.
-Changing text sends a complete snapshot to the local app. Selecting a different
-supported buffer switches the integration to that buffer.
+To update a Git installation, run `git pull` in its checkout. For packaging a
+`.sublime-package` file, see [Contributing](CONTRIBUTING.md).
 
-- Click within a suggestion to open its card immediately, hover over marked text,
-  or run **Refine: Show Suggestion** at the caret.
-- Review the diff and choose **Apply**, **Dismiss**, or **Explain** when available.
-  Busy actions cannot be submitted twice. Reports show confirmation, and failed
-  actions show feedback with retry controls.
-- Explanations show their own model, language, and reading direction. Headings,
-  paragraphs, lists, bold/italic text, and code are formatted. Other Markdown
-  remains plain text; raw HTML, images, and clickable links are not rendered.
-- Run **Refine: Next Suggestion** / **Previous Suggestion** to navigate.
-- Run **Refine: Check Writing** for a manual check. A single selection scopes the
-  check; an empty selection checks the full buffer. Multiple selections are rejected.
-- **Refine: Connection Status** shows the current state. **Refine: Reconnect**
-  starts a fresh session if you need to reset it.
+### 3. Start writing
+
+Open a Markdown or plain-text buffer. With **Check Writing Automatically**
+enabled in Refine, suggestions appear as you write.
+
+1. Click within a suggestion to open its card immediately, or hover over underlined text.
+2. Review the diff, then choose **Apply**, **Dismiss**, or **Explain**.
+3. Use Sublime's **Undo** to undo a correction.
 
 Cards follow Refine's layout, with the suggestion type and language above the
 diff, Explain in the header, and action buttons with available shortcuts below.
@@ -60,43 +88,39 @@ Hover cards stay open as you move toward them and close when you move away.
 Sublime controls the hover delay; clicking opens the card without that wait.
 Selecting text and keyboard Quick Apply keep their existing behavior.
 
-Apply validates the current revision and every expected string, then performs one
-native, undoable buffer replacement. **Undo** restores the original text. Changes
-made while a check is running invalidate its old suggestions. Markdown uses the
-protocol's hard-line-break syntax to preserve source line layout.
+For an immediate check, open the Command Palette and run **Refine: Check
+Writing**. Select one range first to scope the check, or clear the selection to
+check the whole buffer. Multiple selections are not supported.
 
-The status bar shows connection state, progress, and suggestion count. A `selection`
-label indicates partial coverage. Refine reconnects automatically after a restart.
+Only the active supported buffer is checked. Switching buffers moves the
+integration to the new buffer; it does not check an entire project in the
+background.
 
-## Keyboard bindings and appearance
+## Keyboard shortcuts
 
-Apply and Dismiss follow regular key combinations configured in Refine.
-With a compatible Refine app and Input Monitoring permission, standalone
-Left/Right Shift, Option, and Control also work through a negotiated native
-bridge. Older Refine versions retain regular key combinations and mark standalone
-modifiers unavailable. Pointer actions remain usable; no alternate key is assigned.
-Modifier chords and double-taps remain unsupported.
+Apply and Dismiss follow the regular key combinations configured in Refine,
+such as **Option+Right Arrow**. Move the caret into a suggestion to activate it.
+Refine's **Show Tip and Highlight** setting adds an inline shortcut tip;
+**Highlight Changes** shows only the active highlight.
 
-Standalone modifiers fire on press, including when beginning shifted text.
-The plugin rejects stale owners and yields to autocomplete, overlays, panels,
-and snippet editing. Native modifier shortcuts are conservatively disabled
-while an editor panel is open.
+With a suggestion card open, the configured Dismiss key dismisses that suggestion.
+Without a card, it cancels cursor activation and leaves the suggestion in place.
+Move the caret to activate a suggestion again. Outside an active suggestion,
+keys retain their normal editor behavior.
 
-The native modifier listener was removed after a crash in Sublime's bundled
-ARM64 Python 3.8 when macOS invoked its ctypes callback. The plugin uses Sublime
-key bindings and does not install native event callbacks.
+With a compatible Refine version and Input Monitoring permission, standalone
+**Left/Right Shift, Option, and Control** also work. Refine observes the physical
+press and the plugin applies it only to the current suggestion in the focused
+editor. Standalone modifiers fire on press, including when beginning shifted
+text; they are not tap-on-release gestures.
 
-Cursor activation highlights the active changes. The “Show Tip and Highlight”
-setting also displays an inline shortcut tip; “Highlight Changes” omits the tip.
+Older Refine versions retain the existing behavior: regular combinations work,
+standalone modifiers are marked unavailable, and suggestion-card actions remain
+usable. Support is negotiated automatically; there is no version setting.
+Modifier-only chords, double-taps, and some non-Latin layout shortcuts remain
+unsupported. The plugin never silently substitutes another shortcut.
 
-An open suggestion card owns Apply and Dismiss. Without a card, Quick Apply must
-be enabled in Refine and the caret must be inside a current suggestion. In that
-case Escape (or your configured Dismiss key) cancels the quick activation without
-dismissing the suggestion. Move the caret to activate it again. Outside those
-contexts keys retain their editor behavior. Autocomplete, overlays, and editor
-panels take precedence over regular suggestion key bindings.
-
-You can add explicit commands through **Preferences → Key Bindings**, for example:
+You can also add your own bindings through **Preferences → Key Bindings**:
 
 ```json
 [
@@ -107,82 +131,115 @@ You can add explicit commands through **Preferences → Key Bindings**, for exam
 ]
 ```
 
-Diff colors, hidden-whitespace display, and highlight style follow Refine's
-presentation settings. Inline region colors use Sublime's theme scopes
-`region.redish`, `region.bluish`, and `region.purplish`; exact custom Refine
-highlight colors are not mapped to a generated color scheme in this version.
-To disable this integration for a buffer or project, set `"refine_enabled": false`
-in its settings and switch away from and back to that buffer.
+## Commands
 
-## Privacy
+These commands are available in Sublime's Command Palette:
+
+| Command | Action |
+| --- | --- |
+| **Refine: Check Writing** | Check the current buffer or selection. |
+| **Refine: Show Suggestion** | Open the suggestion at the caret. |
+| **Refine: Next Suggestion** / **Previous Suggestion** | Move through suggestions and open their cards. |
+| **Refine: Apply Suggestion** | Apply the open suggestion or the suggestion at the caret. |
+| **Refine: Dismiss Suggestion** | Dismiss the current suggestion. |
+| **Refine: Explain Suggestion** | Show an explanation for the current suggestion. |
+| **Refine: Report Suggestion** | Explicitly send feedback when Refine offers Report. |
+| **Refine: Connection Status** | Show the integration's current status. |
+| **Refine: Reconnect** | Start a fresh connection to Refine. |
+
+Cards show busy actions, Report confirmation, and errors with retry controls.
+Explanations support headings, paragraphs, lists, bold and italic text, and code.
+Other Markdown remains plain text; images, raw HTML, and clickable links are not
+rendered.
+
+## Appearance and status
+
+Configure automatic checks, models, languages, shortcuts, diff colors, and
+highlight style in Refine. Inline highlight colors follow Sublime's theme;
+exact custom Refine highlight colors are not yet supported.
+
+Sublime's status bar shows connection state, checking progress, and suggestion
+count. A `selection` label indicates partial coverage. The plugin reconnects
+automatically when Refine restarts.
+
+To disable Refine for a buffer or project, set `"refine_enabled": false` in its
+settings, then switch away from and back to that buffer.
+
+## Local AI and privacy
 
 The plugin sends the complete active supported buffer, including unsaved text,
-to the running Refine app over an authenticated same-user Unix-domain socket.
-It reads the endpoint descriptor and ownership metadata at
-`~/Library/Application Support/com.runjuu.refine/Integrations/` and the socket's
-metadata. The launch token is kept in memory. It sends no filenames or paths as
-document identity.
+to the local Refine app over a same-user Unix-domain socket. A selected check
+still sends the complete buffer; the selection controls what Refine checks.
+With a downloaded local model, writing checks stay on your Mac and work offline.
+If you configure a hosted provider, Refine may send your writing to that provider.
 
-With a downloaded local model, checking stays on your Mac. If you configure a
-hosted provider in Refine, the app may send the source to that provider.
+To discover Refine, the plugin reads endpoint and ownership metadata under
+`~/Library/Application Support/com.runjuu.refine/Integrations/`. It uses a
+per-launch token and keeps that token in memory. This connection excludes
+network clients and other OS users; it does not protect against another process
+already running as you.
 
-**Report** is available only when Refine offers it, and only an explicit click or
-**Refine: Report Suggestion** command sends that action. Refine may then send
-original/revised excerpts and language, model, provider, instruction, app-version,
-and macOS context to its feedback service. Reports are never automatic.
+**Report is a separate, explicit action.** Only choosing Report can send feedback
+about a live suggestion to Refine's feedback service. That report may include
+original and revised excerpts, language, model, provider, custom instructions,
+and Refine and macOS version details. Reports are never automatic.
 
 The plugin makes no direct internet requests, sends no telemetry, and does not
-persist source, suggestions, explanations, or credentials. In-memory document and
-transaction state lasts for the active integration session. Sublime and other
-plugins have their own persistence behavior, including unsaved-buffer recovery.
+persist source, suggestions, explanations, or credentials. It sends no filenames
+or paths as document identity. Sublime and other installed plugins have their own
+persistence behavior, including unsaved-buffer recovery. App and model downloads,
+updates, hosted checks, and Report require internet access.
 
-## Development
+Read [How Refine works](https://refine.sh/guides/how-refine-works?utm_source=refine-sublime&utm_medium=readme)
+and the [privacy policy](https://refine.sh/privacy-policy?utm_source=refine-sublime&utm_medium=readme)
+for more information.
 
-```sh
-python3 scripts/verify.py
-python3 scripts/package.py
-```
+## Troubleshooting
 
-Verification includes host-contract tests, the vendored positive/negative JSON
-vectors, and nine base-protocol scenarios against the upstream fake server over
-real temporary Unix sockets. These tests require permission to bind local sockets.
-The socket adapter exercises the production transport; editor doubles exercise
-revision handling, Apply, reconnect receipt ordering, and presentation separately.
-They do not substitute for running Sublime itself.
+### No suggestions appear
 
-Manual smoke test before release:
+Confirm that Refine is open and configured, and that Sublime's syntax is
+**Markdown** or **Plain Text**. Run **Refine: Check Writing**, then check
+**Refine: Connection Status**. Buffers over 1 MiB are unsupported.
 
-1. Install the plugin, start Refine, and open Markdown containing `😀 She go home.`.
-2. Check writing; verify an underline, hover popup, readable diff, and status.
-3. Apply a correction and undo it once; verify the entire correction is undone.
-4. Edit while checking, then try an old popup; verify it cannot change the new text.
-5. Request an explanation and navigate between suggestions with commands.
-6. Switch tabs, open a clone in another group, and close views; verify marks belong
-   to the active buffer and the Command Palette does not disconnect the session.
-7. Restart Refine; verify reconnection, no repeated edit, and accurate status.
-8. Disable automatic checks in Refine and verify typing alone does not request a
-   manual check. Check a selection explicitly.
-9. Try CRLF, emoji, combining characters, read-only buffers, and a buffer over 1 MiB.
-10. Configure Left Shift for Apply and Escape for Dismiss. With a compatible
-    Refine app and Input Monitoring permission, verify Left Shift applies once
-    and Right Shift does not. Test focus changes, panels, reconnect, and denied
-    permission. With an older app, Left Shift stays unavailable while the Apply
-    button, Escape, and Option+Right keep working.
-11. With the companion Refine app change, verify Sublime's plugin owns its native
-    checks while Obsidian and unrelated applications retain their own behavior.
+### Refine is disconnected
 
-The current scope excludes code-comment extraction, other operating systems,
-background checking of all tabs, and modifier chords/double-tap gestures.
+Open Refine, then run **Refine: Reconnect** if automatic reconnection has not
+restored the session. The plugin requires exact Integration Protocol 1.0
+compatibility between Refine and the plugin.
 
-## Layout
+### A shortcut is unavailable
 
-- `Refine.py`: Sublime commands and event lifecycle.
-- `refine/editor.py`: active-buffer session, UI, and native Apply transaction.
-- `refine/document.py`: revision identity, UTF-16 coordinates, edit validation.
-- `refine/shortcuts.py`: shortcut negotiation, mapping, and Quick Apply ownership.
-- `refine/transport.py`: reconnecting background socket worker.
-- `refine/protocol.py`: discovery, framing, handshake, and sequencing.
-- `refine/validation.py`: MIT-licensed validator extracted from `refine-protocol`.
-- `vendor/protocol`: pinned schemas, vectors, fake-server runner, and provenance.
+Standalone modifiers require a Refine version supporting the native modifier
+bridge and Refine's Input Monitoring permission. While Refine confirms readiness
+for the active suggestion, the highlight stays visible and the shortcut hint is
+hidden. A monitoring failure is reported as unavailable; pending confirmation is
+never reported as unsupported. Older versions can use a regular combination such
+as Option+Right Arrow or the suggestion card.
+Autocomplete menus, overlays, editor panels, and snippet editing take precedence.
+Native modifier shortcuts are conservatively disabled while a panel is open.
 
-MIT licensed. See [LICENSE](LICENSE) and the vendored protocol provenance.
+### A suggestion cannot be applied
+
+Corrections are checked against the current text before changing the buffer.
+If you edited the text after checking, run another check. Read-only buffers
+cannot be changed. Each successful correction is one undoable operation.
+
+### Sublime reports that its plugin host exited
+
+Update the plugin, save your work, and restart Sublime. An earlier development
+version's standalone-modifier listener could crash the plugin host; that listener
+has been removed.
+
+## Support and development
+
+For bugs and feature requests, [open an issue](https://github.com/refine-sh/refine-sublime/issues).
+For help with Refine for Mac, email [support@refine.sh](mailto:support@refine.sh).
+
+- [Contributing](CONTRIBUTING.md): development, tests, packaging, and manual checks
+- [Changelog](CHANGELOG.md): user-visible changes
+- [Protocol specification](vendor/protocol/spec/protocol.md): the local integration contract
+
+## License
+
+[MIT](LICENSE)

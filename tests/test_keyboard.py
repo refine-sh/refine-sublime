@@ -151,6 +151,26 @@ class KeyboardTests(unittest.TestCase):
         self.assertFalse(self.view.regions.get('refine.active'))
         self.assertFalse(self.view.regions.get('refine.tip'))
 
+    def test_active_highlight_replaces_underline_and_focus_loss_restores_it(self):
+        import copy
+        suggestion = self.content['suggestions'][0]
+        other = copy.deepcopy(suggestion)
+        other['id'] = 'other'
+        other['highlightRanges'] = [{'location': 10, 'length': 4}]
+        self.content['suggestions'].append(other)
+        key = 'refine.' + suggestion['kind']
+        for style in ('underline', 'dashedUnderline'):
+            self.content['appearance']['highlight']['style'] = style
+            self.session.has_focus = True
+            self.session.render()
+            self.assertTrue(self.view.regions['refine.active'])
+            self.assertEqual(len(self.view.regions[key]), 1)
+            self.assertEqual(self.view.regions[key][0].begin(), 9)
+            self.session.has_focus = False
+            self.session.render_activation()
+            self.assertFalse(self.view.regions.get('refine.active'))
+            self.assertEqual(len(self.view.regions[key]), 2)
+
     def test_generated_keymap_is_current_and_only_context_owned(self):
         import importlib.util
         root = Path(__file__).resolve().parents[1]

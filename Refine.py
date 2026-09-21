@@ -7,7 +7,7 @@ import sublime_plugin
 if '_session' in globals():
     import importlib
     import sys
-    for _name in ('shortcuts', 'protocol', 'transport', 'markdown', 'presentation', 'modifier_bridge', 'editor'):
+    for _name in ('shortcuts', 'protocol', 'transport', 'markdown', 'presentation', 'modifier_bridge', 'colors', 'editor'):
         _module = __package__ + '.refine.' + _name
         if _module in sys.modules:
             importlib.reload(sys.modules[_module])
@@ -175,4 +175,3 @@ class RefineShortcutCommand(sublime_plugin.TextCommand):
     def run(self, edit, key):
         if _session and self.view.id() == _session.view.id():
             _session.perform_shortcut(key)
-

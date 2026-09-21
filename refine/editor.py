@@ -9,6 +9,7 @@ from .validation import ConformanceError
 from .presentation import card
 from .shortcuts import Shortcuts, QuickActivation
 from .modifier_bridge import ModifierBridge
+from .colors import FALLBACK_SCOPES, scopes_for, fill_scope
 
 REGION_KEYS = ('refine.grammar', 'refine.fluency', 'refine.mixed', 'refine.active', 'refine.tip')
 
@@ -31,6 +32,7 @@ class Session:
         self.connected = False
         self.closed = False
         self.content = None
+        self.color_scopes = FALLBACK_SCOPES
         self.capabilities = []
         self.shortcuts = None
         self.activation = QuickActivation()
@@ -327,16 +329,7 @@ class Session:
     def render(self):
         content = self.content
         highlight = content['appearance']['highlight']
-        style = highlight['style']
-        flags = sublime.DRAW_NO_OUTLINE
-        if style != 'highlight':
-            flags |= sublime.DRAW_NO_FILL
-            flags |= sublime.DRAW_STIPPLED_UNDERLINE if style == 'dashedUnderline' else sublime.DRAW_SOLID_UNDERLINE
-        for kind, scope in [('grammar', 'region.redish'), ('fluency', 'region.bluish'), ('mixed', 'region.purplish')]:
-            regions = [sublime.Region(*self.document.coordinates.region(span))
-                       for suggestion in content['suggestions'] if suggestion['kind'] == kind
-                       for span in suggestion['highlightRanges']]
-            self.view.add_regions('refine.' + kind, regions, scope, '', flags | sublime.DRAW_EMPTY)
+        self.color_scopes = scopes_for(self.view, highlight)
         self.render_activation()
         progress = content.get('progress')
         if progress:
@@ -359,19 +352,38 @@ class Session:
                 self.view.hide_popup()
                 self.open_suggestion = None
 
+    def render_marks(self, highlighted_id=None):
+        if not self.content or self.view.change_count() != self.document.stamp:
+            for kind in self.color_scopes:
+                self.view.erase_regions('refine.' + kind)
+            return
+        style = self.content['appearance']['highlight']['style']
+        flags = sublime.DRAW_NO_OUTLINE
+        if style != 'highlight':
+            flags |= sublime.DRAW_NO_FILL
+            flags |= sublime.DRAW_STIPPLED_UNDERLINE if style == 'dashedUnderline' else sublime.DRAW_SOLID_UNDERLINE
+        for kind, scope in self.color_scopes.items():
+            if style == 'highlight':
+                scope = fill_scope(scope)
+            regions = [sublime.Region(*self.document.coordinates.region(span))
+                       for suggestion in self.content['suggestions']
+                       if suggestion['kind'] == kind and suggestion['id'] != highlighted_id
+                       for span in suggestion['highlightRanges']]
+            self.view.add_regions('refine.' + kind, regions, scope, '', flags | sublime.DRAW_EMPTY)
+
     def render_activation(self):
         self.modifier_bridge.poll(render=False)
         for key in ('refine.active', 'refine.tip'):
             self.view.erase_regions(key)
-        if (not self.connected or not self.has_focus or self.open_suggestion
-                or self.view.change_count() != self.document.stamp):
-            return
-        suggestion = self.suggestion(self.activation.active)
+        visible = (self.connected and self.has_focus and not self.open_suggestion
+                   and self.view.change_count() == self.document.stamp)
+        suggestion = self.suggestion(self.activation.active) if visible else None
+        self.render_marks(suggestion['id'] if suggestion else None)
         if not suggestion:
             return
         regions = [sublime.Region(*self.document.coordinates.region(span))
                    for span in suggestion['highlightRanges']]
-        self.view.add_regions('refine.active', regions, 'region.yellowish', '',
+        self.view.add_regions('refine.active', regions, fill_scope(self.color_scopes[suggestion['kind']]), '',
                               sublime.DRAW_NO_OUTLINE | sublime.DRAW_EMPTY)
         if self.content['interaction']['quickApply']['activationStyle'] != 'showTipAndHighlight':
             return

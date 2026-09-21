@@ -137,8 +137,13 @@ rendered.
 ## Appearance and status
 
 Configure automatic checks, models, languages, shortcuts, diff colors, and
-highlight style in Refine. Inline highlight colors follow Sublime's theme;
-exact custom Refine highlight colors are not yet supported.
+highlight style and colors in Refine. Underlines use Refine's grammar and fluency
+colors, and background highlights use a light 15% opacity tint of the same color
+without overriding the text color.
+Mixed suggestions blend the grammar and fluency colors equally.
+The plugin writes Refine-only rules into `Packages/Refine Color Overrides`,
+leaving your color scheme and preferences intact. Legacy `.tmTheme` schemes
+fall back to Sublime's closest theme colors.
 
 Sublime's status bar shows connection state, checking progress, and suggestion
 count. A `selection` label indicates that only part of the document was checked.

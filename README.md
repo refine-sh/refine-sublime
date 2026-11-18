@@ -1,12 +1,12 @@
 <div align="center">
-  <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=readme">
+  <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://refine.sh/icon-dark.png">
       <img src="https://refine.sh/icon.png" width="128" alt="Refine icon">
     </picture>
   </a>
   <h1>Refine for Sublime Text</h1>
-  <p><strong>A local-first AI grammar checker and writing assistant for Sublime Text, powered by <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=readme">Refine</a>.</strong></p>
+  <p><strong>A local-first AI grammar checker and writing assistant for Sublime Text, powered by <a href="https://refine.sh?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme">Refine</a>.</strong></p>
   <p>
     <a href="https://www.sublimetext.com/"><img src="https://img.shields.io/badge/Sublime_Text-4-FF9800?logo=sublimetext&logoColor=white" alt="Sublime Text 4"></a>
     <img src="https://img.shields.io/badge/platform-macOS-111111?logo=apple" alt="macOS">
@@ -19,7 +19,7 @@ local model to check your writing offline, without leaving your editor.
 
 Features:
 
-- Private, offline writing checks powered by a local AI model on your Mac
+- Writing checks with a local model on your Mac, offline once the model is downloaded
 - Underlined suggestions with cards that show what will change
 - Explanations with formatting, language, and model details
 - Undoable corrections and keyboard shortcuts for reviewing suggestions
@@ -28,7 +28,7 @@ Features:
 ## Requirements
 
 - Sublime Text 4 on macOS, build 4107 or newer
-- [Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=readme), running and configured with Integration Protocol 1.0 support
+- [Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme), running and configured with Integration Protocol 1.0 support
 
 This plugin is a development version. Use a Refine build that recognizes the
 Sublime Text plugin so Refine can hand writing checks over to it.
@@ -36,11 +36,14 @@ Sublime Text plugin so Refine can hand writing checks over to it.
 The plugin uses Sublime's bundled Python. You do not need to install Python,
 Node.js, or additional packages to use it.
 
+Basic grammar checks are free. Every feature has a 7-day free trial, with no
+account needed. A one-time license is $38 for 1 Mac or $68 for 3 Macs.
+
 ## Quick start
 
 ### 1. Set up Refine
 
-[Download Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=readme),
+[Download Refine for Mac](https://refine.sh?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme),
 open it, and complete setup.
 
 ### 2. Install the plugin
@@ -174,11 +177,12 @@ The plugin makes no direct internet requests, sends no telemetry, and does not
 save document text, suggestions, explanations, or credentials to disk. It does
 not send filenames or paths to identify documents. Sublime and other installed
 plugins may save data separately, including for unsaved-document recovery.
-App and model downloads, updates, hosted checks, and Report require internet
-access.
+With a local model, Refine still uses the network for the model download,
+app updates, license activation, crash reports, and a launch ping. Hosted
+checks and Report also need a connection.
 
-Read [How Refine works](https://refine.sh/guides/how-refine-works?utm_source=refine-sublime&utm_medium=readme)
-and the [privacy policy](https://refine.sh/privacy-policy?utm_source=refine-sublime&utm_medium=readme)
+Read [How Refine works](https://refine.sh/guides/how-refine-works?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme)
+and the [privacy policy](https://refine.sh/privacy-policy?utm_source=refine-sublime&utm_medium=referral&utm_campaign=dev_plugin_readme)
 for more information.
 
 ## Troubleshooting

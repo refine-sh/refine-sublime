@@ -2,6 +2,9 @@
 
 ## 0.2.0 — development
 
+- Draw Refine's Wavy Underline highlight style as a squiggly underline when the
+  optional wavy underline capability is negotiated. Older apps send Underline.
+
 - Keep native modifier hints hidden while a new suggestion awaits confirmation,
   without flashing an unsupported warning. Request ownership immediately and
   distinguish pending readiness from unavailable keyboard monitoring.

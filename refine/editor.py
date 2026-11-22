@@ -361,7 +361,8 @@ class Session:
         flags = sublime.DRAW_NO_OUTLINE
         if style != 'highlight':
             flags |= sublime.DRAW_NO_FILL
-            flags |= sublime.DRAW_STIPPLED_UNDERLINE if style == 'dashedUnderline' else sublime.DRAW_SOLID_UNDERLINE
+            flags |= {'dashedUnderline': sublime.DRAW_STIPPLED_UNDERLINE,
+                      'wavyUnderline': sublime.DRAW_SQUIGGLY_UNDERLINE}.get(style, sublime.DRAW_SOLID_UNDERLINE)
         for kind, scope in self.color_scopes.items():
             if style == 'highlight':
                 scope = fill_scope(scope)

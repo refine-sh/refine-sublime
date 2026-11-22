@@ -3,9 +3,9 @@ import queue
 import select
 import threading
 
-from .protocol import Connection, Rejected, discover, identifier, PROTOCOL, MAX_SEQUENCE
+from .protocol import CAPABILITIES, Connection, Rejected, discover, identifier, PROTOCOL, MAX_SEQUENCE
 from .validation import ConformanceError
-from .shortcuts import CAPABILITIES, LEGACY_KEYS
+from .shortcuts import LEGACY_KEYS
 
 
 class Transport:

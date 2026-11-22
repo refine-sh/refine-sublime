@@ -25,7 +25,7 @@ sublime.Region = Region
 sublime.scheduled = []
 sublime.set_timeout = lambda fn, delay=0: sublime.scheduled.append(fn)
 sublime.status_message = lambda message: None
-for index, name in enumerate(('DRAW_NO_OUTLINE', 'DRAW_NO_FILL', 'DRAW_STIPPLED_UNDERLINE', 'DRAW_SOLID_UNDERLINE', 'DRAW_EMPTY', 'HIDE_ON_MOUSE_MOVE_AWAY')):
+for index, name in enumerate(('DRAW_NO_OUTLINE', 'DRAW_NO_FILL', 'DRAW_STIPPLED_UNDERLINE', 'DRAW_SOLID_UNDERLINE', 'DRAW_EMPTY', 'HIDE_ON_MOUSE_MOVE_AWAY', 'DRAW_SQUIGGLY_UNDERLINE')):
     setattr(sublime, name, 1 << index)
 sys.modules['sublime'] = sublime
 from refine.editor import Session
@@ -56,6 +56,7 @@ class View:
         self.popup = ''
         self.session = None
         self.replace_count = 0
+        self.region_flags = {}
     def settings(self): return {}
     def match_selector(self, point, selector): return selector == 'text.plain'
     def id(self): return 1
@@ -65,7 +66,9 @@ class View:
     def substr(self, region): return self.text[region.begin():region.end()]
     def change_count(self): return self.count
     def erase_regions(self, key): self.regions.pop(key, None)
-    def add_regions(self, key, regions, *args, **kwargs): self.regions[key] = regions
+    def add_regions(self, key, regions, scope='', icon='', flags=0, **kwargs):
+        self.regions[key] = regions
+        self.region_flags[key] = flags
     def set_status(self, key, value): self.statuses[key] = value
     def erase_status(self, key): self.statuses.pop(key, None)
     def sel(self): return self.selection
@@ -188,6 +191,19 @@ class EditorTests(unittest.TestCase):
         self.session.receive('event', {'type': 'presentationContentReplaced', 'checkId': 'old', 'content': self.content})
         self.assertIsNone(self.session.content)
         self.assertFalse(self.view.regions)
+
+    def test_highlight_styles_map_to_region_flags(self):
+        key = 'refine.' + self.content['suggestions'][0]['kind']
+        for style, flag in (('underline', sublime.DRAW_SOLID_UNDERLINE),
+                            ('dashedUnderline', sublime.DRAW_STIPPLED_UNDERLINE),
+                            ('wavyUnderline', sublime.DRAW_SQUIGGLY_UNDERLINE)):
+            with self.subTest(style=style):
+                self.content['appearance']['highlight']['style'] = style
+                self.session.render_marks()
+                flags = self.view.region_flags[key]
+                self.assertTrue(flags & flag and flags & sublime.DRAW_NO_FILL)
+                others = {sublime.DRAW_SOLID_UNDERLINE, sublime.DRAW_STIPPLED_UNDERLINE, sublime.DRAW_SQUIGGLY_UNDERLINE} - {flag}
+                self.assertFalse(any(flags & other for other in others))
 
     def test_scalar_splitting_highlight_disconnects(self):
         self.content['suggestions'][0]['highlightRanges'] = [{'location': 1, 'length': 1}]

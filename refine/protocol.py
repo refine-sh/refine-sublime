@@ -1,4 +1,5 @@
 """Strict, dependency-free Protocol 1.0 transport. No editor API imports."""
+import copy
 import json
 import os
 import socket
@@ -11,7 +12,10 @@ from .validation import (ConformanceError, SchemaStore, MAX_FRAME_BYTES,
                          strict_loads, validate_portable_value,
                          validate_with_schema, validate_semantics)
 
-from .shortcuts import MODIFIER_BRIDGE, CAPABILITIES, V1, V2, validate_presentation_shortcuts
+from .shortcuts import MODIFIER_BRIDGE, CAPABILITIES as SHORTCUT_CAPABILITIES, V1, V2, validate_presentation_shortcuts
+
+WAVY_UNDERLINE = 'com.runjuu.refine.wavy-underline-highlight.v1'
+CAPABILITIES = SHORTCUT_CAPABILITIES + [WAVY_UNDERLINE]
 
 PROTOCOL = {"major": 1, "minor": 0}
 DESCRIPTOR = Path.home() / "Library/Application Support/com.runjuu.refine/Integrations/endpoint.json"
@@ -26,6 +30,26 @@ def validate(value, schema, store):
     validate_portable_value(value)
     validate_with_schema(value, schema, store)
     validate_semantics(value, CAPABILITIES, schema)
+
+
+def base_highlight_style(envelope, capabilities):
+    """Return the envelope as base Protocol 1.0 sees it once wavy underline is negotiated.
+
+    The activated extension only widens appearance.highlight.style by one value, and the
+    server substitutes underline for unactivated clients, so validating that substitute
+    against the base schema checks every other field and still rejects unknown styles.
+    """
+    if WAVY_UNDERLINE not in capabilities:
+        return envelope
+    event = envelope.get('event')
+    content = event.get('content') if isinstance(event, dict) and event.get('type') == 'presentationContentReplaced' else None
+    appearance = content.get('appearance') if isinstance(content, dict) else None
+    highlight = appearance.get('highlight') if isinstance(appearance, dict) else None
+    if not isinstance(highlight, dict) or highlight.get('style') != 'wavyUnderline':
+        return envelope
+    base = copy.deepcopy(envelope)
+    base['event']['content']['appearance']['highlight']['style'] = 'underline'
+    return base
 
 
 def encode_frame(value):
@@ -140,7 +164,7 @@ class Connection:
 
     def receive(self):
         envelope = receive_frame(self.socket)
-        validate(envelope, 'schema/envelope.schema.json#/$defs/eventEnvelope', self.store)
+        validate(base_highlight_style(envelope, self.capabilities), 'schema/envelope.schema.json#/$defs/eventEnvelope', self.store)
         if envelope['epoch'] != self.epoch or envelope['sequence'] != self.event_sequence:
             raise ConformanceError('sequence', 'Invalid event epoch or sequence')
         if envelope['event']['type'] in ('modifierShortcutAvailability', 'modifierShortcutPressed') and MODIFIER_BRIDGE not in self.capabilities:

@@ -1,15 +1,15 @@
 {
   "repository": "https://github.com/refine-sh/refine-protocol",
-  "commit": "ea110fabc2f2584e7470051a38e7884b03e46f7a",
+  "commit": "3144a2827e14cc61da03a34afe7ed5a23359160d",
   "files": {
-    "upstream-manifest.json": "e950ac8ae6900f4f2b4643737036bec30ea9d2e69ec8ecb03db3d3e16cb62adc",
+    "upstream-manifest.json": "e24aa623e73c80dece31d9de9cd09b9e0de7d4a20851b8cc2a71de89797647fc",
     "LICENSE": "f59f35a3441f9cbcfc514af638d7091bcf1610a7a25bc10a5845c02f9b2a68f1",
-    "runner/update_manifest.py": "8487ae46e945438e2fdbdf50f1822f9bc978a5ff0f44957cd30354a97a2a9370",
-    "runner/README.md": "b5c94f749909ee39bc2c0a579b687f49194585f3019ea9ce435098cfdc52aae1",
-    "runner/conformance.py": "c779602f778453610f4772b2097098ce5571b2841be672f19ac6adeb422e935c",
+    "runner/update_manifest.py": "9da857c91b667ef6ae39bfe044691c9b4ecdbe42bc243c436668ddadd24d6b99",
+    "runner/README.md": "542fe93fa3d65677f5d81f9887e63aa37a136e98e152de16b471977b97d55f3a",
+    "runner/conformance.py": "bca74b8a168795d10257106fda09acc80a944ff88d40e6ea2c436f9e4242602d",
     "spec/suggestion-shortcuts-v1.md": "99bdf4b7831f48026ff15726485c077094870f097b0e5457bb68f8f80feea4d5",
     "spec/suggestion-shortcuts-v2.md": "de63940ca66ab7f2f2d0add45928396aeab084b2df9be47c8e7703fb2799ea08",
-    "spec/protocol.md": "3437a2fef09717d403512d374909dec9982d6f8fda6e124cc9712de7fd37d115",
+    "spec/protocol.md": "797021e01ea1619b201a1e35599cc9bf329a879edf47df886d05dd2ead55ff2c",
     "schema/command.schema.json": "b27ce22b1cfbebefec11ba25a33ad3bc1cccfdef8e3a4833b4c59cab0d173ce7",
     "schema/envelope.schema.json": "ce4a84c098d45fb2b43ab8e45c79e6be7484aee0adff7a3bc916e65c3848bbdd",
     "schema/shared.schema.json": "67c11fa690726b1f0ecca9e4f031b0eede771127689381bef4fee6722486eb70",
@@ -19,8 +19,8 @@
     "schema/suggestion-shortcuts.schema.json": "09904751470a69cdc6f633720a047a9bbb78ce3edf410a83e07e213d0d8d05cb",
     "schema/endpoint-descriptor.schema.json": "b6474f39e07e56adc9163d3a4656bd48e72ced12b2e9e1146411f8666c315381",
     "schema/event.schema.json": "89a4360f05b49f544ead693ccc0b5e18bfaa62638176f658c5443b1c11833484",
-    "registry/capabilities.json": "18fed80f891ed6292328487bb19f2270530674f42dbd0991325da58b7243496b",
-    "registry/README.md": "8139328c9c1b48d06a8e25b624004f3b773f83ffbb5e809c70f6a483e4dea9b6",
+    "registry/capabilities.json": "bdb5de898ca909dbec8d1b43a8d42aececb080c0c7b95c9116833dfb67817406",
+    "registry/README.md": "4686a0a2542d1f5b574da74fd2ddf6679e00a8379d94316f1c1d877f11fc84b7",
     "vectors/frames/framing.json": "4320f5c6fffd907d3e3e78f451c4ce2d832a95be15249a1f6b7f0acc4c623126",
     "vectors/state/modifier-gestures.json": "ce0dccbaf7708682afdd6c317d62b4d4504da9f54ef96c48ad07737d7f2cf221",
     "vectors/state/sequence-exhaustion.json": "68faa3ac1cf81f5b53df052a5f3c7badf94f571fe87749da5906301ba4264154",
@@ -47,6 +47,14 @@
     "vectors/json/negative/shape-and-enums.json": "591179fe8b870f5613882705dc7d6b9c4413c8f91b0cbb9d72152552cce5c911",
     "spec/standalone-modifier-shortcuts-v1.md": "c6c4f08d727732b6494df32d8a55d1632e535f2d68ec26f671f37d5a08be1b05",
     "vectors/json/positive/standalone-modifiers.json": "ff93d85ba71cc3d4ca267c56b3ca187d2f251545b4f6cfc2f8973ad2872a72c9",
-    "vectors/json/negative/standalone-modifiers.json": "5649a6964fe11e355d1cb03f59ebf5020fef26111991cf0d9724b1bdbf23198a"
+    "vectors/json/negative/standalone-modifiers.json": "5649a6964fe11e355d1cb03f59ebf5020fef26111991cf0d9724b1bdbf23198a",
+    "schema/check-diagnostics.schema.json": "0c5ea222a82603d322031febbb98a8de7a99583206b53406e36a8f6c7286165b",
+    "schema/wavy-underline-highlight.schema.json": "df060bc4453877891edda327131be0a882bfc35f8863268a7cc47cd9d5c02d76",
+    "spec/check-diagnostics-v1.md": "eeb884fb1c9b9c668bef2fca876851d1d01320617f2503c8ee5e32e9abb9bc30",
+    "spec/wavy-underline-highlight-v1.md": "6f0ff750e64081edfb9a2c1fe8d584b1c540912c553b4be11d797e6caf6ae724",
+    "vectors/check-diagnostics/presentations.json": "9fc744630ac1989cade5249dfaf080c498c91157de59a7f7b4f4ef7da35a9fc1",
+    "vectors/state/check-diagnostics.json": "c71c045eb2d5e552c5436c600f701a374a41e98718beb157b5dcce8520448687",
+    "vectors/state/wavy-underline-highlight.json": "f0bce1584127ad46be581f21b53a7b5ac5c4a6069375545104177aa723ccfb15",
+    "vectors/wavy-underline-highlight/appearances.json": "7932c61817ce5804e72894298b7bfe16672d50f7f7cf841cedc4f74a00136789"
   }
 }

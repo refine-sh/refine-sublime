@@ -31,7 +31,7 @@ On success, `verify` writes exactly one JSON object and a newline to standard
 output:
 
 ```json
-{"artifactDigest":"…","baseArtifactDigest":"…","capabilityRegistryDigest":"…","frameVectors":0,"jsonNegative":0,"jsonPositive":0,"protocol":{"major":1,"minor":0},"stateVectors":0,"status":"ok"}
+{"artifactDigest":"…","baseArtifactDigest":"…","capabilityRegistryDigest":"…","checkDiagnosticVectors":0,"frameVectors":0,"jsonNegative":0,"jsonPositive":0,"protocol":{"major":1,"minor":0},"stateVectors":0,"status":"ok","wavyUnderlineHighlightVectors":0}
 ```
 
 The counts above are illustrative. On success, `socket` writes exactly:
@@ -94,6 +94,8 @@ The socket-runnable scenarios are:
 | `sequence-exhaustion` | Send `UInt32.max`, close, reconnect, restart at one |
 | `invalid-server-inputs` | Reject duplicate-key and zero-length frames and close |
 | `markdown-hard-line-breaks` | Hard-line-break Markdown snapshot, check, Apply, receipt preserving every line ending |
+| `check-diagnostics` | Optional partial diagnostics, original-revision coordinates, and rejection of malformed activated data |
+| `wavy-underline-highlight` | Activated `wavyUnderline`, `underline` fallback without activation, and rejection of other unknown styles |
 
 The fake peer compares messages with the vector and fails on the first mismatch.
 It never prints the launch token or source payloads. It is test tooling, not a
@@ -140,7 +142,8 @@ third-party server profile.
 
 `verify` checks manifest completeness and digests, strict JSON lexical rules,
 schemas, semantic rules, framed-byte vectors, state transcripts, and the exact
-manifest inventories of every vector/scenario ID. Run
+manifest inventories of every base, check-diagnostic, and wavy-underline-highlight
+vector/scenario ID. Run
 `python3 runner/update_manifest.py` after intentionally changing a release
 artifact. A digest change is reviewable protocol-package work; consumers should
 vendor the resulting manifest and exact files.

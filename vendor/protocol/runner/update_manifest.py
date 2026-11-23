@@ -72,6 +72,8 @@ def main() -> None:
         "jsonPositiveCaseIds": case_ids(sorted((ROOT / "vectors" / "json" / "positive").glob("*.json"))),
         "jsonNegativeCaseIds": case_ids(sorted((ROOT / "vectors" / "json" / "negative").glob("*.json"))),
         "frameCaseIds": case_ids(sorted((ROOT / "vectors" / "frames").glob("*.json"))),
+        "checkDiagnosticCaseIds": case_ids(sorted((ROOT / "vectors" / "check-diagnostics").glob("*.json"))),
+        "wavyUnderlineHighlightCaseIds": case_ids(sorted((ROOT / "vectors" / "wavy-underline-highlight").glob("*.json"))),
         "stateScenarioIds": [
         json.loads(path.read_text(encoding="utf-8"))["id"]
         for path in sorted((ROOT / "vectors" / "state").glob("*.json"))

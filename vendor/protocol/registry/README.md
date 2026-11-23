@@ -1,7 +1,19 @@
 # Capability registry
 
 [`capabilities.json`](capabilities.json) is the immutable registry snapshot for
-the Protocol 1.0 base artifact. An activated capability set of `[]` is the complete base protocol. The registry also includes the optional suggestion-shortcuts.v1 capability; its separately hashed specification defines binding replacement after negotiation.
+this Protocol 1.0 release candidate. An activated capability set of `[]` is the
+complete base protocol. Optional capabilities have separately hashed
+specifications:
+
+- [suggestion-shortcuts.v1](../spec/suggestion-shortcuts-v1.md) defines negotiated
+  shortcut combinations;
+- [suggestion-shortcuts.v2](../spec/suggestion-shortcuts-v2.md) adds modifier gestures;
+- [standalone-modifier-shortcuts.v1](../spec/standalone-modifier-shortcuts-v1.md)
+  defines the standalone modifier bridge;
+- [check-diagnostics.v1](../spec/check-diagnostics-v1.md) identifies unchecked
+  passages in partial results without carrying source text; and
+- [wavy-underline-highlight.v1](../spec/wavy-underline-highlight-v1.md) adds the
+  `wavyUnderline` highlight style, with an `underline` fallback for base clients.
 
 Future entries are append-only, immutable, versioned identifiers in a
 publisher-controlled reverse-domain namespace, ending in `.vN`; Refine-owned

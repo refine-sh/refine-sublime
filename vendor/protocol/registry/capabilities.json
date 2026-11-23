@@ -20,6 +20,16 @@
       "id": "com.runjuu.refine.standalone-modifier-shortcuts.v1",
       "specification": "spec/standalone-modifier-shortcuts-v1.md",
       "digest": "c6c4f08d727732b6494df32d8a55d1632e535f2d68ec26f671f37d5a08be1b05"
+    },
+    {
+      "id": "com.runjuu.refine.check-diagnostics.v1",
+      "specification": "spec/check-diagnostics-v1.md",
+      "digest": "eeb884fb1c9b9c668bef2fca876851d1d01320617f2503c8ee5e32e9abb9bc30"
+    },
+    {
+      "id": "com.runjuu.refine.wavy-underline-highlight.v1",
+      "specification": "spec/wavy-underline-highlight-v1.md",
+      "digest": "6f0ff750e64081edfb9a2c1fe8d584b1c540912c553b4be11d797e6caf6ae724"
     }
   ]
 }

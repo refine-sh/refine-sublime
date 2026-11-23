@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import fcntl
 import hashlib
 import json
@@ -22,6 +23,8 @@ MAX_FRAME_BYTES = 8_388_608
 MAX_SOURCE_BYTES = 1_048_576
 MAX_SAFE_INTEGER = 9_007_199_254_740_991
 PROTOCOL = {"major": 1, "minor": 0}
+CHECK_DIAGNOSTICS_CAPABILITY = "com.runjuu.refine.check-diagnostics.v1"
+WAVY_UNDERLINE_HIGHLIGHT_CAPABILITY = "com.runjuu.refine.wavy-underline-highlight.v1"
 EXCLUDED_ROOTS = {".git", "__pycache__"}
 EXCLUDED_FILES = {"manifest.json", ".DS_Store"}
 
@@ -818,12 +821,15 @@ def verify_state_vector(
         if actual is not case["valid"]:
             raise ConformanceError("state", "%s Apply edit overlap expectation is incorrect" % case["id"])
 
+    diagnostic_snapshots: Dict[str, Any] = {}
+    diagnostic_identity: Optional[Tuple[str, str]] = None
     for connection in vector["connections"]:
         starts = connection.get("sequenceStarts", {})
         expected_sequence = {
             "client": starts.get("client", 1),
             "server": starts.get("server", 1),
         }
+        hello: Optional[Mapping[str, Any]] = None
         welcome: Optional[Mapping[str, Any]] = None
         restore_order: List[str] = []
         steps = connection.get("steps", [])
@@ -843,6 +849,12 @@ def verify_state_vector(
             message = substitute(state_step_message(step, messages), token, epoch_placeholder)
             validate_portable_value(message)
             invalid = step.get("invalid")
+            try:
+                message = base_highlight_view(message, welcome, store)
+            except SchemaError:
+                if invalid == "schema" and step.get("direction") == "server":
+                    continue
+                raise
             message_schema = (
                 "schema/handshake.schema.json"
                 if message.get("type") in ("hello", "welcome", "rejected")
@@ -865,6 +877,28 @@ def verify_state_vector(
                 except ConformanceError:
                     continue
                 raise ConformanceError("state", "semantic fixture is not invalid")
+            if invalid == "checkDiagnostics":
+                event = message.get("event")
+                expected_epoch = welcome.get("serverEpoch") if welcome is not None else None
+                if (
+                    step.get("direction") != "server"
+                    or message.get("type") != "event"
+                    or message.get("sequence") != expected_sequence["server"]
+                    or message.get("epoch") != expected_epoch
+                    or not isinstance(event, dict)
+                    or event.get("type") != "presentationContentReplaced"
+                ):
+                    raise ConformanceError("state", "invalid diagnostic fixture is not a valid server presentation")
+                validate_with_schema(message, message_schema, store)
+                validate_semantics(message, published, message_schema)
+                try:
+                    validate_state_check_diagnostics(message, welcome, diagnostic_snapshots, store)
+                except ConformanceError:
+                    next_step = steps[index + 1] if index + 1 < len(steps) else {}
+                    if next_step.get("close") is not True or next_step.get("direction") != "client":
+                        raise ConformanceError("state", "invalid diagnostics must be followed by client close")
+                    continue
+                raise ConformanceError("state", "diagnostic fixture is not invalid")
             if invalid == "faultUnion":
                 event = message.get("event", {}) if isinstance(message, dict) else {}
                 expected_epoch = welcome.get("serverEpoch") if welcome is not None else None
@@ -886,8 +920,14 @@ def verify_state_vector(
                 raise ConformanceError("state", "faultUnion fixture is not invalid")
             if message.get("type") in ("hello", "welcome", "rejected"):
                 validate_with_schema(message, "schema/handshake.schema.json", store)
-                if message["type"] == "welcome":
+                if message["type"] == "hello":
+                    hello = message
+                elif message["type"] == "welcome":
                     welcome = message
+                    identity = (hello["runId"], message["serverEpoch"]) if hello is not None else None
+                    if identity is None or not message["runResumed"] or identity != diagnostic_identity:
+                        diagnostic_snapshots.clear()
+                    diagnostic_identity = identity
             else:
                 validate_with_schema(message, "schema/envelope.schema.json", store)
                 direction = step["direction"]
@@ -923,6 +963,16 @@ def verify_state_vector(
                     if message["epoch"] != welcome["serverEpoch"]:
                         raise ConformanceError("state", "%s event epoch differs from welcome" % vector["id"])
             validate_semantics(message, published)
+            if message.get("type") == "command":
+                command = message["command"]
+                snapshot = None
+                if command["type"] in ("openDocument", "replaceDocument"):
+                    snapshot = command["snapshot"]
+                elif command["type"] == "completeApply":
+                    snapshot = command["outcome"].get("snapshot")
+                if snapshot is not None:
+                    diagnostic_snapshots.setdefault(snapshot["revision"], snapshot["sources"])
+            validate_state_check_diagnostics(message, welcome, diagnostic_snapshots, store)
             if "restore" in step:
                 restore_order.append(step["restore"])
         if restore_order:
@@ -1070,6 +1120,14 @@ def verify_manifest(root: Path) -> Mapping[str, Any]:
             sorted((root / "vectors" / "json" / "negative").glob("*.json")),
             "negative JSON",
         ),
+        "checkDiagnosticCaseIds": case_inventory(
+            sorted((root / "vectors" / "check-diagnostics").glob("*.json")),
+            "check diagnostics",
+        ),
+        "wavyUnderlineHighlightCaseIds": case_inventory(
+            sorted((root / "vectors" / "wavy-underline-highlight").glob("*.json")),
+            "wavy underline highlight",
+        ),
         "frameCaseIds": case_inventory(
             sorted((root / "vectors" / "frames").glob("*.json")),
             "frame",
@@ -1123,6 +1181,116 @@ def verify_shortcut_vectors(root: Path, store: SchemaStore) -> None:
                 raise ConformanceError("shortcut-vector", case["id"])
 
 
+def validate_check_diagnostics(content: Any, sources: Any, activated: bool, store: SchemaStore) -> None:
+    validate_portable_value(content)
+    if not activated or "checkDiagnostics" not in content:
+        return
+    diagnostic = content["checkDiagnostics"]
+    validate_with_schema(diagnostic, "schema/check-diagnostics.schema.json", store)
+    if content.get("status") != "complete" or content.get("coverage") != "partial":
+        raise ConformanceError("check-diagnostics", "requires partial completion")
+    indexes = {source["sourceId"]: index for index, source in enumerate(sources)}
+    encoded_sources: Dict[int, bytes] = {}
+    previous = None
+    for issue in diagnostic["issues"]:
+        index = indexes.get(issue["sourceId"])
+        if index is None:
+            raise ConformanceError("check-diagnostics", "unknown source")
+        if index not in encoded_sources:
+            encoded_sources[index] = sources[index]["text"].encode("utf-16-le")
+        source = encoded_sources[index]
+        location, length = issue["range"]["location"], issue["range"]["length"]
+        for endpoint in (location, location + length):
+            offset = endpoint * 2
+            if offset > len(source) or (
+                offset < len(source)
+                and 0xDC00 <= int.from_bytes(source[offset:offset + 2], "little") <= 0xDFFF
+            ):
+                raise ConformanceError("check-diagnostics", "invalid source range")
+        key = (index, location, length, issue["kind"], issue["reason"])
+        if previous is not None and key <= previous:
+            raise ConformanceError("check-diagnostics", "duplicate or unordered issue")
+        previous = key
+
+
+def validate_state_check_diagnostics(
+    message: Mapping[str, Any],
+    welcome: Optional[Mapping[str, Any]],
+    snapshots: Mapping[str, Any],
+    store: SchemaStore,
+) -> None:
+    if welcome is None or CHECK_DIAGNOSTICS_CAPABILITY not in welcome["capabilities"]:
+        return
+    if message.get("type") != "event":
+        return
+    event = message["event"]
+    if event["type"] != "presentationContentReplaced" or "checkDiagnostics" not in event["content"]:
+        return
+    content = event["content"]
+    sources = snapshots.get(content["documentRevision"])
+    if sources is None:
+        raise ConformanceError("check-diagnostics", "unknown presentation revision")
+    validate_check_diagnostics(content, sources, True, store)
+
+
+def validate_highlight_appearance(appearance: Any, activated: bool, store: SchemaStore) -> None:
+    validate_portable_value(appearance)
+    schema = (
+        "schema/wavy-underline-highlight.schema.json"
+        if activated
+        else "schema/shared.schema.json#/$defs/appearance"
+    )
+    validate_with_schema(appearance, schema, store)
+
+
+def base_highlight_view(
+    message: Mapping[str, Any],
+    welcome: Optional[Mapping[str, Any]],
+    store: SchemaStore,
+) -> Mapping[str, Any]:
+    """Validate an activated wavyUnderline appearance and return its base underline view."""
+    if welcome is None or WAVY_UNDERLINE_HIGHLIGHT_CAPABILITY not in welcome["capabilities"]:
+        return message
+    event = message.get("event") if message.get("type") == "event" else None
+    if not isinstance(event, dict) or event.get("type") != "presentationContentReplaced":
+        return message
+    content = event.get("content")
+    appearance = content.get("appearance") if isinstance(content, dict) else None
+    highlight = appearance.get("highlight") if isinstance(appearance, dict) else None
+    if not isinstance(highlight, dict) or highlight.get("style") != "wavyUnderline":
+        return message
+    validate_highlight_appearance(appearance, True, store)
+    view = copy.deepcopy(dict(message))
+    view["event"]["content"]["appearance"]["highlight"]["style"] = "underline"
+    return view
+
+
+def verify_wavy_underline_highlight_vectors(root: Path, store: SchemaStore) -> int:
+    cases = load_json(root / "vectors/wavy-underline-highlight/appearances.json")["cases"]
+    for case in cases:
+        try:
+            validate_highlight_appearance(case["appearance"], case["activated"], store)
+            valid = True
+        except ConformanceError:
+            valid = False
+        if valid != case["valid"]:
+            raise ConformanceError("wavy-underline-highlight-vector", case["id"])
+    return len(cases)
+
+
+def verify_check_diagnostic_vectors(root: Path, store: SchemaStore) -> int:
+    cases = load_json(root / "vectors/check-diagnostics/presentations.json")["cases"]
+    for case in cases:
+        try:
+            validate_check_diagnostics(case["content"], case["sources"], case["activated"], store)
+            valid = True
+        except ConformanceError:
+            valid = False
+        if valid != case["valid"]:
+            raise ConformanceError("check-diagnostic-vector", case["id"])
+    return len(cases)
+
+
 def verify(root: Path) -> Mapping[str, Any]:
     manifest = verify_manifest(root)
     store = SchemaStore(root)
@@ -1130,6 +1298,8 @@ def verify(root: Path) -> Mapping[str, Any]:
         store.load(str(path.relative_to(root)))
     published = published_capability_ids(root, store)
     verify_shortcut_vectors(root, store)
+    check_diagnostics = verify_check_diagnostic_vectors(root, store)
+    wavy_underline_highlight = verify_wavy_underline_highlight_vectors(root, store)
     positive, negative = verify_json_vectors(root, store, published)
     frames = verify_frame_vectors(root, store, published)
     states = verify_state_vectors(root, store, published)
@@ -1142,6 +1312,8 @@ def verify(root: Path) -> Mapping[str, Any]:
         "jsonPositive": positive,
         "jsonNegative": negative,
         "frameVectors": frames,
+        "checkDiagnosticVectors": check_diagnostics,
+        "wavyUnderlineHighlightVectors": wavy_underline_highlight,
         "stateVectors": states,
     }
 

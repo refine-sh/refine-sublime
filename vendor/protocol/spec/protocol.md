@@ -235,9 +235,14 @@ is the subset present in the server's exact published registry snapshot,
 implemented by the server, and offered by the client. A client MUST close if
 the server activates an unoffered or unrecognized capability.
 
-An empty activated set `[]` is complete Protocol 1.0 behavior. The current registry also offers the optional [suggestion shortcut capability](suggestion-shortcuts-v1.md). An
-extension may add optional fields, messages, or behavior only after activation.
-It cannot remove base messages, weaken validation or security, or make required behavior optional. Negotiated suggestion shortcuts may replace the standalone shortcut bindings as specified by suggestion-shortcuts.v1; all other base semantics remain unchanged. Registered identifiers use a
+An empty activated set `[]` is complete Protocol 1.0 behavior. The current
+registry also offers the optional [suggestion shortcut capability](suggestion-shortcuts-v1.md).
+The optional [check diagnostics capability](check-diagnostics-v1.md) identifies
+unchecked passages in a partial result. The optional
+[wavy underline highlight capability](wavy-underline-highlight-v1.md) adds a
+`wavyUnderline` highlight style; servers send `underline` instead without it.
+An extension may add optional fields, messages, or behavior only after activation.
+It cannot remove base messages, weaken validation or security, or make required behavior optional. Negotiated suggestion shortcuts may replace the standalone shortcut bindings as specified by suggestion-shortcuts.v1, and wavy-underline-highlight.v1 widens only the activated `appearance.highlight.style` enum; all other base semantics remain unchanged. Registered identifiers use a
 publisher-controlled reverse-domain namespace and end in `.vN`; Refine-owned
 identifiers use `com.runjuu.refine.<feature>.vN`. Breaking semantics require a
 new identifier.

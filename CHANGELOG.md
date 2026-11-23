@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 — development
+## 0.2.0 — 2026-11-22
 
 - Draw Refine's Wavy Underline highlight style as a squiggly underline when the
   optional wavy underline capability is negotiated. Older apps send Underline.
